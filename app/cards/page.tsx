@@ -4,11 +4,18 @@ import Header from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import BusinessCard from "@/types/BusinessCard";
+import { BusinessCard, Tag } from "@/types/BusinessCard";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect, use } from "react";
 
-export default function Home() {
+type SearchTag = Tag & { selected: boolean };
+
+export default function Cards() {
+  const router = useRouter();
+
   const [businessCards, setBusinessCards] = useState<BusinessCard[]>([]);
+  const [search, setSearch] = useState<string>("");
+  const [searchTags, setSearchTags] = useState<SearchTag[]>([]);
 
   // TODO: uncomment when backend is ready
   // useEffect(() => {
@@ -35,6 +42,7 @@ export default function Home() {
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
       },
       {
         name: "Jane Doe",
@@ -42,6 +50,7 @@ export default function Home() {
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
       },
       {
         name: "John Smith",
@@ -49,12 +58,15 @@ export default function Home() {
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
-      },{
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
+      },
+      {
         name: "John Doe",
         email: "john_doe@gmail.com",
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
       },
       {
         name: "Jane Doe",
@@ -62,6 +74,7 @@ export default function Home() {
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
       },
       {
         name: "John Smith",
@@ -69,23 +82,63 @@ export default function Home() {
         frontImageUrl: "https://fakeimg.pl/600x400",
         backImageUrl: "https://fakeimg.pl/600x400",
         phone: "1234567890",
+        tags: [{ name: "tag1" }, { name: "tag2" }, { name: "tag3" }],
+      },
+    ]);
+
+    setSearchTags([
+      {
+        name: "tag1",
+        selected: true
+      },
+      {
+        name: "tag2",
+        selected: true
+      },
+      {
+        name: "tag3",
+        selected: true
       },
     ]);
   }, []);
+
+  const onClickSearchTag = (tag: SearchTag) => {
+    const newSearchTags = searchTags.map((searchTag) => {
+      if (searchTag.name === tag.name) {
+        return {
+          ...searchTag,
+          selected: !searchTag.selected,
+        };
+      } else {
+        return searchTag;
+      }
+    });
+
+    setSearchTags(newSearchTags);
+  }
 
   return (
     <main>
       <Header />
 
       <div className="container mx-auto max-w-screen-lg p-4">
-
-        <Input placeholder="Search..." className="w-full" />
+        <Input
+          placeholder="Search..."
+          className="w-full"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
         <div className="p-4">
           <div className="flex gap-1">
-            <Badge className="cursor-pointer">Primary</Badge>
-            <Badge className="cursor-pointer">Secondary</Badge>
-            <Badge className="cursor-pointer" variant="outline">Tertiary</Badge>
+            {searchTags.map((tag, index) => (
+              <Badge
+                key={index}
+                onClick={(e) => onClickSearchTag(tag)}
+                variant={tag.selected ? "default" : "outline"}
+                className="cursor-pointer"
+              >{tag.name}</Badge>
+            ))}
           </div>
         </div>
 
@@ -99,16 +152,24 @@ export default function Home() {
                 <div>
                   <span className="font-semibold">{card.name}</span>
                 </div>
-                <p>{card.email}</p>
-                <p>{card.phone}</p>
+                <div>{card.email}</div>
+                <div>{card.phone}</div>
 
                 <div className="mt-4 flex gap-1">
-                  <Badge>Primary</Badge>
-                  <Badge>Secondary</Badge>
+                  {card.tags.map((tag, index) => (
+                    <Badge key={index}>{tag.name}</Badge>
+                  ))}
                 </div>
               </div>
               <div className="p-4">
-                <Button className="w-full">View</Button>
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    router.push(`/cards/${index}`);
+                  }}
+                >
+                  View
+                </Button>
               </div>
             </div>
           ))}

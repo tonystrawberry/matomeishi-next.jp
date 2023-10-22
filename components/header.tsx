@@ -1,22 +1,25 @@
-import React from 'react';
+import React from "react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
-const Header: React.FC = () => {
-    return (
-        <header className=" p-4 text-white flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-black rounded-full"></div>
-            </div>
+const Header = () => {
+  const router = useRouter();
 
-            <div className="flex gap-4">
-              <Button variant="secondary">Add Business Card</Button>
+  return (
+    <header className=" p-4 text-white flex justify-between items-center">
+      {/* Logo */}
+      <div className="flex items-center">
+        <div className="w-10 h-10 bg-black rounded-full"></div>
+      </div>
 
-              {/* Logout Button */}
-              <Button>Logout</Button>
-            </div>
-        </header>
-    );
-}
+      <div className="flex gap-4">
+        <Button variant="secondary" onClick={() => router.push("/cards/new")}>Add Business Card</Button>
+
+        {/* Logout Button */}
+        <Button>Logout</Button>
+      </div>
+    </header>
+  );
+};
 
 export default Header;

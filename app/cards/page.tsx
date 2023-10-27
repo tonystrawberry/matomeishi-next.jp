@@ -1,40 +1,26 @@
 "use client" // This is a client component 👈🏽
 
+// URL: /cards
+// This is the page that displays all the business cards
+// This page is only accessible if the user is logged in
+// The user can search for business cards by name, company, email, mobile phone, and tags
+// Upon clicking on a business card, the user is redirected to the business card page
+
 import Header from "@/components/header"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { BusinessCard, Tag } from "@/types/BusinessCard"
+import { BusinessCard, BusinessCardResponse, BusinessCardsResponse, Tag, TagResponse } from "@/types/BusinessCard"
 import { useRouter, useSearchParams } from "next/navigation"
 import React, { useState, useEffect, useContext } from "react"
-import { AuthContext } from "../authContext"
+import { AuthContext } from "../../contexts/authContext"
 import { Pagination, PaginationInfo } from "@/components/pagination"
-import withAuth from "../withAuth"
+import withAuth from "../../components/withAuth"
 import { User } from "firebase/auth"
 import { toast } from "@/components/ui/use-toast"
+import { WalletCards } from "lucide-react"
 
 // This is the type of the search tags that are displayed below the search bar
 type SearchTag = Tag & { selected: boolean }
-
-interface BusinessCardResponse {
-  attributes: BusinessCard
-  id: string
-  relationships: {
-    tags: {
-      data: TagResponse[]
-    }
-  }
-  type: string
-}
-
-interface TagResponse {
-  attributes: Tag
-  id: string
-  type: string
-}
-interface BusinessCardsResponse {
-  data: BusinessCardResponse[]
-  included: TagResponse[]
-}
 
 export function Cards() {
   const router = useRouter() // This is a hook that gives us access to the router
@@ -211,12 +197,12 @@ export function Cards() {
       })
 
     } catch (error) {
-      console.error("[matomeishi] Error:", error)
+      console.error("[matomeishi]", error)
 
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your our server.",
+        description: "There was a problem with our server.",
       })
 
       setBusinessCards([])
@@ -251,12 +237,12 @@ export function Cards() {
 
       setSearchTags(searchTags)
     } catch (error) {
-      console.error("[matomeishi] Error:", error)
+      console.error("[matomeishi]", error)
 
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your our server.",
+        description: "There was a problem with our server.",
       })
 
       setSearchTags([])
@@ -325,7 +311,7 @@ export function Cards() {
 
     if (numberOfSelectedTags !== 0 && numberOfSelectedTags !== newSearchTags.length) {
       newSearchTags.filter((searchTag) => (searchTag.selected)).forEach((searchTag) => {
-        copiedParams.append("tags[]", searchTag.id)
+        copiedParams.append("tags[]", searchTag.id.toString())
       })
     }
 
@@ -343,6 +329,11 @@ export function Cards() {
       <Header />
 
       <div className="container mx-auto max-w-screen-lg p-4">
+        <div className="flex items-center mb-4">
+          <WalletCards className="mr-2 h-6 w-6" />
+          <h1 className="text-2xl font-semibold">Gallery</h1>
+        </div>
+
         {/* Search bar */}
         <Input
           placeholder="Search..."
@@ -373,7 +364,7 @@ export function Cards() {
               className="bg-white rounded-md shadow cursor-pointer hover:shadow-lg transition duration-250 overflow-hidden"
               onClick={() => { router.push(`/cards/${businessCard.code}`) }}>
               <div className="w-100 bg-cover bg-center relative h-40" style={{backgroundImage: `url('${businessCard.front_image_url}')`}} ></div> {/* Front image */}
-              <div className="p-4 border-bottom">
+              <div className="px-4 py-3 border-bottom">
                 <div>
                   <span className="text-sm font-semibold">{businessCard.last_name} {businessCard.first_name}</span> {/* Name */}
                 </div>
@@ -382,11 +373,13 @@ export function Cards() {
                 <div className="text-xs text-muted-foreground">{businessCard.mobile_phone}</div> {/* Mobile Phone */}
 
                 {/* Tags */}
-                <div className="mt-4 flex flex-wrap gap-1">
-                  {businessCard.tags.map((tag) => (
-                    <Badge key={tag.id} className="text-xs">{tag.name}</Badge>
-                  ))}
-                </div>
+                { businessCard.tags.length > 0 &&
+                  <div className="mt-4 flex flex-wrap gap-1">
+                    {businessCard.tags.map((tag) => (
+                      <Badge key={tag.id} className="text-xs">{tag.name}</Badge>
+                    ))}
+                  </div>
+                }
               </div>
             </div>
           ))}

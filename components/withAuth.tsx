@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-import { AuthContext } from "./authContext"
+import { AuthContext } from "@/contexts/authContext"
+import { Loading } from "@/components/loading";
 
 const withAuth = (WrappedComponent: any) => {
   const WithAuthComponent: React.FC = (props: any) => {
@@ -11,7 +12,6 @@ const withAuth = (WrappedComponent: any) => {
     const { user, loading } = useContext(AuthContext);
 
     useEffect(() => {
-      console.log("withAuth", user, loading)
       if (!loading){
         if (!user) {
           // redirect to login page
@@ -22,7 +22,7 @@ const withAuth = (WrappedComponent: any) => {
     }, [loading, user, router]);
 
     if (loading) {
-      return <div>Loading...</div>;
+      return <Loading />;
     } else {
       return <WrappedComponent {...props} />;
     }

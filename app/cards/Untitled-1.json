@@ -1,0 +1,62 @@
+{
+    "business_cards": {
+        "data": [
+            {
+                "id": "52",
+                "type": "business_card",
+                "attributes": {
+                    "id": 52,
+                    "code": "e3dab8997958ff61c4f6",
+                    "company": "CREATIVE DEVELOPERS",
+                    "email": "info@creativedevelopers.com",
+                    "fax": "gregerr",
+                    "first_name": "KIM",
+                    "home_phone": "8365-9686-6997",
+                    "last_name": "LOU WAN",
+                    "meeting_date": "2023-10-26T08:38:31.920Z",
+                    "mobile_phone": "(987)-4575-9567",
+                    "notes": "grergreergre\n\n絵wfrequentg",
+                    "status": "analyzed",
+                    "created_at": "2023-10-26T01:24:52.794Z",
+                    "updated_at": "2023-10-26T12:29:38.220Z",
+                    "front_image_url": "https://storage.googleapis.com/matomeishi/1/52-front-image?GoogleAccessId=google-cloud-storage%40matomeishi-401514.iam.gserviceaccount.com\u0026Expires=1698326369\u0026Signature=OPHiNHXBF6GlEGtiCsrjvbAOtRkzBTQEyYg4JH21mjUtOVF2zhKpqLJx4erycoK9XjZGWvM%2F8rtiXFHcTlvLL%2FCDcl8qzbiMND9egkOnU8i7WRaIQMc7ftOR3B7QHmeeY%2BO3OZ8C3q80WGDoEGtQeZzYSkkwZua908cTIUx7wAUXUudeF1kP0bHA5yeIL32IBcanHw8rriGT5aqB2P53joomQXqLXbvYPSvFfU1ca6RGf76OJNcvEC5p9vccKlh5Goip2fV0DxR%2BW43d7qwgyWTg0QB9YHy3WKr%2FTebifY%2BYQ4i2nq090lUyirJ0CKwtU3vGnw4E7DoCBrfFDC0t4A%3D%3D\u0026response-content-disposition=inline%3B+filename%3D%2252-front-image.png%22%3B+filename%2A%3DUTF-8%27%2752-front-image.png\u0026response-content-type=image%2Fpng",
+                    "back_image_url": "https://storage.googleapis.com/matomeishi/1/52-back-image?GoogleAccessId=google-cloud-storage%40matomeishi-401514.iam.gserviceaccount.com\u0026Expires=1698326369\u0026Signature=ZgoeCZ8B50EdWmDpwFP0x0CHd8vTMP%2Bv4XPYAYuIPFPevtwDdcfSV6e2D99ro9SUTLuD9Qlgct9NCVDmhRG8acK12ZAwPiwIlPnoHeWCj0B%2FK5mhqTZad%2BgE15C7pZFhADO8iGy80jOa%2FYXwZZETtxxAnBgaXE1qQF0PGsvN%2BVtBRT8lyjWFSgVJTFZyEthQWybl%2F%2F5ltmCEfqXbK%2BobaIY7%2F7e2bSe2Tm8bZ0NzkGWLbtTDL2Y4hh9NMfulDpgakYJOxEx6PdIKwL0hKfM%2FB8NCO1G4axTd8bLStkjpTIv0w6ULvhGKddoj%2F814Yo9XOpdl5N2iwHW%2FdOnN1o23Tw%3D%3D\u0026response-content-disposition=inline%3B+filename%3D%2252-back-image.png%22%3B+filename%2A%3DUTF-8%27%2752-back-image.png\u0026response-content-type=image%2Fpng"
+                },
+                "relationships": {
+                    "tags": {
+                        "data": [
+                            {
+                                "id": "4",
+                                "type": "tag"
+                            },
+                            {
+                                "id": "7",
+                                "type": "tag"
+                            },
+                            {
+                                "id": "8",
+                                "type": "tag"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "included": [
+            {
+                "id": "4",
+                "type": "tag",
+                "attributes": {
+                    "id": 4,
+                    "name": "miller_inc",
+                    "description": "Saepe non culpa quos ea dolores laboriosam ullam nam facilis.",
+                    "color": "#f16672"
+                }
+            }
+        ]
+    },
+    "current_page": 1,
+    "total_count": 52,
+    "total_pages": 5,
+    "is_last_page": false
+}

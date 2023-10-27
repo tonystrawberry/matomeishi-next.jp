@@ -1,81 +1,91 @@
-"use client"; // This is a client component 👈🏽
+"use client" // This is a client component 👈🏽
 
-import Image from "next/image";
+// URL: /cards/new
+// This page allows the user to upload the front and back images of a business and analyze it.
 
-import Header from "@/components/header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Image from "next/image"
+import Header from "@/components/header"
+import { Button } from "@/components/ui/button"
+import React, { useState, useContext } from "react"
+import { useRouter } from "next/navigation"
+import { AuthContext } from "@/contexts/authContext"
+import withAuth from "@/components/withAuth"
+import { User } from "firebase/auth"
+import { toast } from "@/components/ui/use-toast"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { CreditCard, Loader2, PlusCircle } from "lucide-react"
 
-import React, { useState, useEffect, use, ChangeEvent, useContext } from "react";
-import * as z from "zod";
-import { useRouter } from "next/navigation";
-import { AuthContext } from "@/app/authContext";
+// Response from POST /business_cards endpoint
+interface PostBusinessCardsResponse {
+  data: {
+    attributes: {
+      code: string
+    }
+  }
+}
 
-const formSchema = z.object({
-  name: z.string().min(1).max(256),
-  email: z.string().email(),
-  phone: z.string().min(1).max(256),
-  tags: z.array(z.object({ name: z.string().min(1).max(256) })).optional(),
-});
+export function Card() {
+  const router = useRouter()
+  const { user } = useContext(AuthContext) as { user: User }
 
-export default function Card() {
-  const router = useRouter();
-  const { user, loading } = useContext(AuthContext);
+  const [frontImage, setFrontImage] = useState<File | null>(null) // Front image of business card
+  const [backImage, setBackImage] = useState<File | null>(null) // Back image of business card
+  const [analyzing, setAnalyzing] = useState<boolean>(false) // State of the business card analysis (set to true when the user clicks the "Add & Analyze" button)
 
-  const [frontImage, setFrontImage] = useState<File | null>(null);
-  const [backImage, setBackImage] = useState<File | null>(null);
-  const [analyzing, setAnalyzing] = useState<boolean>(false);
+  /***** Functions *****/
 
-  // TODO: uncomment when backend is ready
-  // useEffect(() => {
-  //   // Function to fetch business cards from API
-  //   const fetchBusinessCard = async () => {
-  //     try {
-  //       const response = await fetch("https://api.example.com/business-cards"); // Replace with your actual API endpoint
-  //       const data = await response.json();
-  //       setBusinessCard(data);
-  //     } catch (error) {
-  //       console.error("Error fetching business cards:", error);
-  //     }
-  //   };
-
-  //   // Call the fetch function
-  //   fetchBusinessCard();
-  // }, []); // Empty dependency array ensures this effect runs once on component mount
-
-  const handleUploadImage = async (
+  // Callback function when the user uploads an image
+  const onUploadImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "front" | "back"
   ) => {
+    // Check if the user uploaded an image file
     if (!e.target.files) {
-      return;
+      return
     }
 
-    console.log(e.target.className);
+    if (analyzing) {
+      return
+    }
 
-    console.log("e.target.files", e.target.files);
     if (type === "front") {
-      setFrontImage(e.target.files[0]);
+      setFrontImage(e.target.files[0])
     } else if (type === "back") {
-      setBackImage(e.target.files[0]);
+      setBackImage(e.target.files[0])
     }
-  };
+  }
 
+  // Callback function when the user clicks the "Add & Analyze" button
+  // The user will be redirected to the business card page after the server responds
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault() // Prevent the form from submitting
+    setAnalyzing(true)
 
-    const formData = new FormData();
-    formData.set("front_image", frontImage as Blob);
-    formData.set("back_image", backImage as Blob);
+    // Check if the user uploaded both front and back images
+    if (!frontImage || !backImage) {
+      toast({
+        title: "We need both front and back images.",
+        description: "Please upload both front and back images.",
+      })
 
-    if (!user) {
-      return;
+      setAnalyzing(false)
+      return
     }
 
-    setAnalyzing(true)
-    const firebaseToken = await user.getIdToken();
+    // Create a FormData object to send the images to the server
+    const formData = new FormData()
+    formData.set("front_image", frontImage as Blob)
+    formData.set("back_image", backImage as Blob)
 
+    // Show a toast message if telling the business card is being analyzed
+    toast({
+      title: "Analyzing business card...",
+      description: "Please wait while we analyze your business card.",
+    })
+
+    // Send the images to the server to analyze
+    const firebaseToken = await user.getIdToken()
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards`,
       {
@@ -83,15 +93,13 @@ export default function Card() {
         body: formData,
         headers: { "x-firebase-token": firebaseToken }
       }
-    );
+    )
 
-    const data = await response.json();
+    const data = await response.json() as PostBusinessCardsResponse
 
-    console.log("data", data);
-
-    setAnalyzing(false)
-    router.push(`/cards/${data.data.attributes.code}`);
-  };
+    setAnalyzing(false) // Set analyzing state to false after the server responds
+    router.push(`/cards/${data.data.attributes.code}`) // Redirect the user to the business card page
+  }
 
   return (
     <main>
@@ -101,70 +109,89 @@ export default function Card() {
         <Button
           variant="secondary"
           onClick={() => {
-            router.push("/cards");
+            router.push("/cards")
           }}
         >
           Back
         </Button>
 
+        <Separator className="my-4" />
+
+        <div className="flex items-center">
+          <CreditCard className="mr-2 h-6 w-6" />
+          <h1 className="text-2xl font-semibold">Add a Business Card</h1>
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+            Submit images of your business card&rsquo;s front and back.
+            We&rsquo;ll analyze the images and extract the information from the business card.
+        </p>
+
         {/* Upload front image of business card */}
-        <form onSubmit={onSubmit}>
-          <div className="flex flex-col md:flex-row">
-            <div className="w-full md:w-1/2 py-4 pl-4">
-              <div>
-                <Label htmlFor="picture">Front Image</Label>
+        <form className="py-4" onSubmit={onSubmit}>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="w-full md:w-1/2 py-4">
+              <div className="mb-4">
+                <div className="mb-2">
+                  <div className="text-sm font-semibold">Front Image</div>
+                </div>
                 <input
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                  id="file_input"
                   type="file"
-                  onChange={(e) => {
-                    handleUploadImage(e, "front");
-                  }}
+                  accept="image/png, image/gif, image/jpeg"
+                  disabled={analyzing}
+                  onChange={(e) => { onUploadImage(e, "front") }}
                 />
               </div>
               {/* Show preview of uploaded front image */}
-              <Image
-                src={frontImage ? URL.createObjectURL(frontImage) : "/placeholder.png"}
-                width={500}
-                height={300}
-                alt="Front image"
-              />
+              {
+                frontImage ?
+                <div className="w-100 bg-cover bg-center relative h-64" style={{backgroundImage: `url('${URL.createObjectURL(frontImage)}')`}} ></div>
+                :
+                <Skeleton className="w-full h-64" />
+              }
+
             </div>
 
             {/* Upload back image of business card */}
-            <div className="w-full md:w-1/2 py-4 pl-4">
-              <div>
-                <Label htmlFor="picture">Back Image</Label>
+            <div className="w-full md:w-1/2 py-4">
+              <div className="mb-4">
+                <div className="text-sm font-semibold mb-2">Back Image</div>
                 <input
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                  id="file_input"
                   type="file"
-                  onChange={(e) => {
-                    handleUploadImage(e, "back");
-                  }}
+                  accept="image/png, image/gif, image/jpeg"
+                  disabled={analyzing}
+                  onChange={(e) => { onUploadImage(e, "back") }}
                 />
               </div>
-              <Image
-                src={backImage ? URL.createObjectURL(backImage) : "/placeholder.png"}
-                width={500}
-                height={300}
-                alt="Front image"
-              />
+
+              {/* Show preview of uploaded back image */}
+              {
+                backImage ?
+                  <div className="w-100 bg-cover bg-center relative h-64" style={{backgroundImage: `url('${URL.createObjectURL(backImage)}')`}} ></div>
+                :
+                <Skeleton className="w-full h-64" />
+              }
+
             </div>
           </div>
+
           {/* Submit button */}
-          <div className="w-full">
-            <Button>
-              { analyzing &&
-                <svg aria-hidden="true" className="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                  <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                </svg>
+          <div className="w-full text-center">
+            <Button disabled={analyzing}>
+              { analyzing ?
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                :
+                <PlusCircle className="mr-2 h-4 w-4"/>
               }
-              Add & Analyze</Button>
+              Analyze
+            </Button>
           </div>
         </form>
       </div>
     </main>
-  );
+  )
 }
+
+export default withAuth(Card)

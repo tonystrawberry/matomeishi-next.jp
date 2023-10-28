@@ -9,7 +9,7 @@ import withAuth from "@/components/withAuth"
 // This page is the landing page of the application.
 // It contains a sign in form and a hero image.
 
-export function AuthenticationPage() {
+function AuthenticationPage() {
   return (
     <>
       <div className="md:hidden">

@@ -89,7 +89,7 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
     setIsLoading(true)
 
     sendSignInLinkToEmail(auth, email, {
-      url: `${process.env.NEXT_PUBLIC_HOST_URL}:3001`,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}`,
       handleCodeInApp: true,
     }).then(() => {
       setIsLoading(false)

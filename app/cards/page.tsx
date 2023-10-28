@@ -17,7 +17,8 @@ import { Pagination, PaginationInfo } from "@/components/pagination"
 import withAuth from "../../components/withAuth"
 import { User } from "firebase/auth"
 import { toast } from "@/components/ui/use-toast"
-import { WalletCards } from "lucide-react"
+import { FileSpreadsheet, WalletCards } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 // This is the type of the search tags that are displayed below the search bar
 type SearchTag = Tag & { selected: boolean }
@@ -32,6 +33,7 @@ export function Cards() {
   const [search, setSearch] = useState<string>("") // Corresponds to the user input in the search bar
   const [searchTags, setSearchTags] = useState<SearchTag[]>([]) // Corresponds to the tags that are displayed below the search bar
   const [params, setParams] = useState<URLSearchParams>(new URLSearchParams()) // Corresponds to the params that we will use to fetch data
+  const [isLoadingCsv, setIsLoadingCsv] = useState<boolean>(false) // isLoadingCsv is true when the user clicks the "Export as CSV" button
 
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
     currentPage: 1,
@@ -324,6 +326,39 @@ export function Cards() {
     window.history.pushState({}, "", window.location.pathname + "?" + copiedParams.toString()) // Change URL to append page number (without reloading the page)
   }
 
+  // Callback function for when the "Export as CSV" button is clicked
+  // Called when we click on the "Export as CSV" button
+  // This function will call the API to export the business cards as CSV
+  const onClickExportCsv = async () => {
+    setIsLoadingCsv(true)
+
+    try {
+      const firebaseToken = await user.getIdToken() // Get the Firebase access token
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards/export`, { headers: { "x-firebase-token": firebaseToken }})
+      const data = await response.blob()
+
+      // Create a URL for the CSV file and download it
+      const url = window.URL.createObjectURL(data)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'business_cards.csv')
+      document.body.appendChild(link)
+      link.click()
+
+      setIsLoadingCsv(false)
+    } catch (error) {
+      console.error("[matomeishi]", error)
+
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with our server.",
+      })
+
+      setIsLoadingCsv(false)
+    }
+  }
+
   return (
     <main>
       <Header />
@@ -332,6 +367,9 @@ export function Cards() {
         <div className="flex items-center mb-4">
           <WalletCards className="mr-2 h-6 w-6" />
           <h1 className="text-2xl font-semibold">Gallery</h1>
+
+          {/* Export CSV button */}
+          <Button className="ml-auto" onClick={onClickExportCsv}><FileSpreadsheet className="w-4 h-4 mr-2" />Export as CSV</Button>
         </div>
 
         {/* Search bar */}

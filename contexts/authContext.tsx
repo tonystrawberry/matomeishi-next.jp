@@ -1,4 +1,5 @@
-'use client'
+"use client" // This is a client component 👈🏽
+
 import React, { useEffect, useState, createContext, ReactNode } from "react"
 import { app } from "../app/firebase"
 import { User, getAuth } from "firebase/auth";

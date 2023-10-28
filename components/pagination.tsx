@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 
 // Component: Pagination
 // Shows the pagination component (1, 2, 3, ..., 10)

@@ -1,30 +1,15 @@
-"use client"; // This is a client component 👈🏽
+"use client" // This is a client component 👈🏽
 
-import { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
+import { AuthForm } from "@/components/authForm"
+import { Palmtree, WalletCards } from "lucide-react"
+import withAuth from "@/components/withAuth"
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import { UserAuthForm } from "@/components/user-auth-form"
-import { AuthContext } from "../contexts/authContext"
-import { useContext } from "react"
-import { useRouter } from "next/navigation";
-import { Palmtree } from "lucide-react";
+// URL: /
+// This page is the landing page of the application.
+// It contains a sign in form and a hero image.
 
-export default function AuthenticationPage() {
-  const { user, loading } = useContext(AuthContext);
-  const router = useRouter();
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (user) {
-    router.push("/cards");
-    return
-  }
-
+export function AuthenticationPage() {
   return (
     <>
       <div className="md:hidden">
@@ -54,17 +39,21 @@ export default function AuthenticationPage() {
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Create an account
+              <h1 className="flex items-center jusitfy-center text-2xl font-semibold tracking-tight">
+                Let&apos;s store business cards <WalletCards className="h-6 w-6 ml-2" />
               </h1>
-              <p className="text-sm text-muted-foreground">
-                Enter your email below to create your account
+              <p className="text text-muted-foreground">
+                Sign in to start storing business cards.
               </p>
             </div>
-            <UserAuthForm />
+
+            {/* The authentication form containing the buttons to sign in with Google and email. */}
+            <AuthForm />
           </div>
         </div>
       </div>
     </>
   )
 }
+
+export default withAuth(AuthenticationPage)

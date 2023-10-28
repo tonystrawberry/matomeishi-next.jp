@@ -34,10 +34,11 @@ import withAuth from "@/components/withAuth"
 import { User } from "firebase/auth"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
-import { AtSign, Building2, CalendarDays, CalendarIcon, Phone, PlusCircle, Printer, ScrollText, Smartphone, UserCircle, Tag as TagIcon, Pyramid, AppWindow, GraduationCap, Home } from "lucide-react"
+import { AtSign, Building2, CalendarDays, CalendarIcon, Phone, PlusCircle, Printer, ScrollText, Smartphone, UserCircle, Tag as TagIcon, Pyramid, AppWindow, GraduationCap, Home, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 
 // The form schema contains the validation rules for the form (using Zod)
@@ -285,11 +286,39 @@ export function Card() {
     remove(fields.findIndex((field) => field.tagId == tag.id))
   }
 
+  // Function to remove a business card
+  // Called when the user clicks the "Delete" button
+  const onClickDeleteBusinessCard = async () => {
+    try {
+      const firebaseToken = await user.getIdToken()
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards/${id}`,
+      {
+        method: "DELETE",
+        headers: { "x-firebase-token": firebaseToken }
+      })
+
+      toast({
+        title: "We deleted your business card.",
+        description: "The business card is no longer available.",
+      })
+
+      router.push("/cards")
+    } catch (error) {
+      console.error("[matomeishi]", error)
+
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with our server.",
+      })
+    }
+  }
+
   return (
     <main>
       <Header />
 
-      <div className="container mx-auto max-w-screen-lg p-4 pb-16">
+      <div className="container mx-auto max-w-screen-lg p-4 pb-32">
         <div className="flex justify-center items-center relative">
           <Button
             className="absolute left-0"
@@ -624,7 +653,23 @@ export function Card() {
                   <Separator className="my-4" />
 
                   <div className="flex justify-center">
-                    <Button type="submit">Update</Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" type="button"><Trash2 className="w-4 h-4 mr-2" />Delete</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2">Are you sure?</DialogTitle>
+                          <DialogDescription>
+                            You are about to delete this business card. This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button variant="destructive" type="button" onClick={onClickDeleteBusinessCard}>Permanently Delete</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Button className="ml-auto" type="submit">Update</Button>
                   </div>
                 </form>
               </Form>

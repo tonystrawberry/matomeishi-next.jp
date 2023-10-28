@@ -1,11 +1,11 @@
-"use client"; // This is a client component 👈🏽
+"use client" // This is a client component 👈🏽
 
-import { Button } from "@/components/ui/button";
-import { Palmtree } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"
+import { Palmtree } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function NotFound() {
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <main>
@@ -28,5 +28,5 @@ export default function NotFound() {
         </div>
       </div>
     </main>
-  );
+  )
 }

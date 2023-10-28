@@ -1,16 +1,16 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { getAuth, signOut } from "firebase/auth";
-import { app } from "@/app/firebase";
+import React from "react"
+import { Button } from "@/components/ui/button"
+import { useRouter, usePathname } from "next/navigation"
+import { getAuth, signOut } from "firebase/auth"
+import { app } from "@/app/firebase"
 import {
   Menu,
   Palmtree,
   PlusCircle,
   Tag,
   Unplug,
-} from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+} from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,40 +18,47 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 
 // Component: Header
 // Shows the header of the app (logo, buttons, etc.)
 
 const Header = () => {
-  const router = useRouter();
+  const router = useRouter()
+  const pathname = usePathname()
 
   // Callback function when the user clicks the "Logout" button
   const logout = () => {
-    const auth = getAuth(app);
+    const auth = getAuth(app)
     signOut(auth)
       .then(() => {
         // Sign-out successful
-        router.push("/");
+        router.push("/")
       })
       .catch((error) => {
-        console.error("[matomeishi]", error);
+        console.error("[matomeishi]", error)
 
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: "There was a problem with our server.",
-        });
+        })
 
-        router.push("/");
-      });
-  };
+        router.push("/")
+      })
+  }
 
   return (
     <header className="container mx-auto max-w-screen-lg p-4 text-white flex justify-between items-center">
       {/* Logo */}
       <div className="flex items-center">
-        <div className="w-16 h-16 bg-black rounded-full flex justify-center items-center">
+        <div className="w-16 h-16 bg-black rounded-full flex justify-center items-center cursor-pointer" onClick={() => {
+            // If not already on the /cards page, redirect to the /cards page
+            if (pathname !== "/cards") {
+              router.push("/cards")
+            }
+          }
+        }>
           <Palmtree className="w-8 h-8" />
         </div>
       </div>
@@ -96,7 +103,7 @@ const Header = () => {
         </DropdownMenu>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

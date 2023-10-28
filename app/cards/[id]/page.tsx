@@ -55,7 +55,7 @@ const formSchema = z.object({
   meeting_date: z.date().optional(),
   mobile_phone: z.string().optional(),
   notes: z.string().optional(),
-  tags: z.array(z.object({ tagId: z.number().optional(), name: z.string() })),
+  tags: z.array(z.object({ tagId: z.number().optional(), name: z.string(), color: z.string().optional() })),
   website: z.string().url().optional().or(z.literal('')),
 })
 
@@ -101,6 +101,7 @@ export function Card() {
     fetchTags()
   }, []) // Empty dependency array ensures this effect runs once on component mount
 
+  // Set the form data (react-hook-form) when the business card object is fetched
   useEffect(() => {
     form.setValue("address", businessCard?.address ?? undefined)
     form.setValue("company", businessCard?.company ?? undefined)
@@ -129,6 +130,11 @@ export function Card() {
         `${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards/${id}`,
         { headers: { "x-firebase-token": firebaseToken } }
       )
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch the business card | ${response.status}`, )
+      }
+
       const data = await response.json() as GetBusinessCardResponse
 
       const businessCard = data.data.attributes
@@ -141,7 +147,7 @@ export function Card() {
 
       // Append tags to the form (react-hook-form)
       tags.map((tag: any) => tag.attributes).forEach((tag: any) => {
-        append({ tagId: tag.id, name: tag.name })
+        append({ tagId: tag.id, name: tag.name, color: tag.color })
       })
 
       setBusinessCard(businessCard)
@@ -169,6 +175,11 @@ export function Card() {
         `${process.env.NEXT_PUBLIC_SERVER_API_URL}/tags`,
         { headers: { "x-firebase-token": firebaseToken } }
       )
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch the tags | ${response.status}`, )
+      }
+
       const data = await response.json()
 
       setTags(data.data.map((tag: any) => tag.attributes))
@@ -214,6 +225,10 @@ export function Card() {
         body: body,
         headers: { "x-firebase-token": firebaseToken, "Content-Type": "application/json" }
       })
+
+      if (!response.ok) {
+        throw new Error(`Failed to update the business card | ${response.status}`, )
+      }
 
       await response.json()
 
@@ -262,20 +277,20 @@ export function Card() {
     const formattedCustomtag = customTag.toLowerCase().replaceAll(" ", "_")
     if (fields.some((field) => field.name === formattedCustomtag)) return // Do nothing if the custom tag already exists
 
-    append({ name: formattedCustomtag }) // Append the custom tag to the form (react-hook-form)
+    append({ name: formattedCustomtag, color: "#000000" }) // Append the custom tag to the form and the color is black by default (react-hook-form)
   }
 
   // Function to add a tag to the form (react-hook-form)
   // Called when the user clicks a tag in the popover for adding tags
-  const addTag = (tag: { name: string; id?: number | undefined; }) => {
+  const addTag = (tag: { name: string; id?: number | undefined; color?: string | undefined }) => {
     if (fields.some((field) => field.tagId === tag.id)) return // Do nothing if the tag already exists
 
-    append({ tagId: tag.id, name: tag.name }) // Append the tag to the form (react-hook-form)
+    append({ tagId: tag.id, name: tag.name, color: tag.color }) // Append the tag to the form (react-hook-form)
   }
 
   // Function to remove a tag from the form (react-hook-form)
   // Called when the user clicks a tag in the form
-  const removeTag = (tag: { name: string; id?: number | undefined; }) => () => {
+  const removeTag = (tag: { name: string; id?: number | undefined; color?: string | undefined }) => () => {
     // If the tag is a custom tag, remove it from the form by name (react-hook-form)
     if (tag.id === undefined) {
       remove(fields.findIndex((field) => field.name == tag.name))
@@ -329,8 +344,8 @@ export function Card() {
           >
             Back
           </Button>
-          <div>
-            <div className="flex items-center">
+          <div className="ml-auto text-left md:ml-0 ">
+            <div className="flex items-center justify-end md:justify-center">
               <UserCircle className="mr-2 h-6 w-6" />
               {businessCard ? <h1 className="text-2xl font-semibold">{businessCard?.last_name} {businessCard?.first_name}</h1> : <Skeleton className="w-40 h-6" />}
             </div>
@@ -359,18 +374,18 @@ export function Card() {
             </div>
           </div>
           <div className="w-full md:w-1/2 py-4 p-4 md:pl-4 md:p-0 md:py-4">
-            { businessCard ?
+            { businessCard &&
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmitValid, onSubmitInvalid)}
                   className="space-y-3"
                 >
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                     <FormField
                       control={form.control}
                       name="last_name"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><UserCircle className="w-4 h-4" />Last name</FormLabel>
                           <FormControl>
                             <Input placeholder="John Doe" {...field} />
@@ -383,7 +398,7 @@ export function Card() {
                       control={form.control}
                       name="first_name"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2 relative"><UserCircle className="w-4 h-4" />First name <Badge variant="destructive" className="absolute right-0 rounded text-xs ml-1">Required</Badge></FormLabel>
                           <FormControl>
                             <Input placeholder="John Doe" {...field} />
@@ -394,12 +409,12 @@ export function Card() {
                     />
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                     <FormField
                       control={form.control}
                       name="company"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><Building2 className="w-4 h-4" />Company</FormLabel>
                           <FormControl>
                             <Input placeholder="Monstarlab" {...field} />
@@ -412,7 +427,7 @@ export function Card() {
                       control={form.control}
                       name="department"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><Pyramid className="w-4 h-4" />Department</FormLabel>
                           <FormControl>
                             <Input placeholder="Human Resources" {...field} />
@@ -423,12 +438,12 @@ export function Card() {
                     />
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                     <FormField
                       control={form.control}
                       name="job_title"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><GraduationCap className="w-4 h-4" />Job Title</FormLabel>
                           <FormControl>
                             <Input placeholder="Chief Executive Officer" {...field} />
@@ -441,7 +456,7 @@ export function Card() {
                       control={form.control}
                       name="website"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><AppWindow className="w-4 h-4" />Website</FormLabel>
                           <FormControl>
                             <Input placeholder="https://monstar-lab.com" {...field} />
@@ -480,12 +495,12 @@ export function Card() {
                     )}
                   />
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                     <FormField
                       control={form.control}
                       name="home_phone"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><Phone className="w-4 h-4" />Home Phone</FormLabel>
                           <FormControl>
                             <Input placeholder="08094074800" {...field} />
@@ -498,7 +513,7 @@ export function Card() {
                       control={form.control}
                       name="mobile_phone"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><Smartphone className="w-4 h-4" />Mobile Phone</FormLabel>
                           <FormControl>
                             <Input placeholder="08094074800" {...field} />
@@ -508,12 +523,12 @@ export function Card() {
                       )}
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                     <FormField
                       control={form.control}
                       name="fax"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><Printer className="w-4 h-4" />Fax</FormLabel>
                           <FormControl>
                             <Input placeholder="08094074800" {...field} />
@@ -526,7 +541,7 @@ export function Card() {
                       control={form.control}
                       name="meeting_date"
                       render={({ field }) => (
-                        <FormItem className="w-1/2">
+                        <FormItem className="md:w-1/2 w-full">
                           <FormLabel className="flex items-center gap-2"><CalendarDays className="w-4 h-4" />Meeting Date</FormLabel>
                           <FormControl>
                           <Popover>
@@ -594,6 +609,7 @@ export function Card() {
                                 <Badge
                                   className="cursor-pointer"
                                   onClick={removeTag(field.value)}
+                                  style={{ backgroundColor: field.value.color }}
                                 >
                                   {field.value.name}
                                 </Badge>
@@ -624,18 +640,14 @@ export function Card() {
                                   ? "cursor-default"
                                   : "cursor-pointer"
                               }
-                              variant={
-                                fields.some((field) => field.tagId == tag.id)
-                                  ? "outline"
-                                  : "default"
-                              }
+                              style={{ backgroundColor: tag.color, color: "white", opacity: fields.some((field) => field.tagId == tag.id) ? 0.5 : 1 }}
                               onClick={() => addTag(tag)}
                             >
                               { tag.name }
                             </Badge>
                           ))}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
                           <Input
                             placeholder="Custom Tag"
                             className="w-full"
@@ -673,8 +685,6 @@ export function Card() {
                   </div>
                 </form>
               </Form>
-              :
-              <Skeleton className="w-full h-64" />
             }
           </div>
         </div>

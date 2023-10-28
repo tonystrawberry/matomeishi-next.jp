@@ -108,6 +108,11 @@ export function Cards() {
     try {
       const firebaseToken = await user.getIdToken() // Get the Firebase access token
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards?${params.toString()}`, { headers: { "x-firebase-token": firebaseToken }})
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch the business cards | ${response.status}`, )
+      }
+
       const data = await response.json() as { business_cards: BusinessCardsResponse, current_page: number, total_count: number, total_pages: number, is_last_page: boolean }
 
       // Example of data returned from API
@@ -222,6 +227,11 @@ export function Cards() {
     try {
       const firebaseToken = await user.getIdToken() // Get the Firebase access token
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/tags`, { headers: { "x-firebase-token": firebaseToken }})
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch the tags | ${response.status}`, )
+      }
+
       const data = await response.json() as { data: TagResponse[] }
 
       // Add all tags to the search tags below the search bar
@@ -335,6 +345,11 @@ export function Cards() {
     try {
       const firebaseToken = await user.getIdToken() // Get the Firebase access token
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards/export`, { headers: { "x-firebase-token": firebaseToken }})
+
+      if (!response.ok) {
+        throw new Error(`Failed to export to CSV | ${response.status}`, )
+      }
+
       const data = await response.blob()
 
       // Create a URL for the CSV file and download it
@@ -389,6 +404,7 @@ export function Cards() {
                 onClick={(e) => onClickSearchTag(tag)}
                 variant={tag.selected ? "default" : "outline"}
                 className="cursor-pointer"
+                style={{ backgroundColor: tag.color, color: "white", opacity: tag.selected ? 1 : 0.5 }}
               >{tag.name}</Badge>
             ))}
           </div>
@@ -414,7 +430,13 @@ export function Cards() {
                 { businessCard.tags.length > 0 &&
                   <div className="mt-4 flex flex-wrap gap-1">
                     {businessCard.tags.map((tag) => (
-                      <Badge key={tag.id} className="text-xs">{tag.name}</Badge>
+                      <Badge
+                        key={tag.id}
+                        className="text-xs"
+                        style={{ backgroundColor: tag.color, color: "white" }}
+                      >
+                        {tag.name}
+                      </Badge>
                     ))}
                   </div>
                 }

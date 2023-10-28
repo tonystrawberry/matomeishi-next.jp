@@ -27,6 +27,7 @@ export interface Tag {
   name: string;
   color?: string;
   description?: string;
+  business_cards_count: number;
 }
 
 export interface BusinessCardResponse {
@@ -56,6 +57,9 @@ export interface GetBusinessCardResponse {
   included: TagResponse[]
 }
 
+export interface GetTagResponse {
+  data: TagResponse
+}
 
 export interface PutBusinessCardResponse {
 

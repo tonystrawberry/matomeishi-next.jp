@@ -95,6 +95,10 @@ export function Card() {
       }
     )
 
+    if (!response.ok) {
+      throw new Error(`Failed to upload the business card | ${response.status}`, )
+    }
+
     const data = await response.json() as PostBusinessCardsResponse
 
     setAnalyzing(false) // Set analyzing state to false after the server responds

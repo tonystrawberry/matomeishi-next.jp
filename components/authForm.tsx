@@ -1,5 +1,8 @@
 "use client" // This is a client component 👈🏽
 
+// Component: AuthForm
+// Shows the authentication form (sign in with email, sign in with Google)
+
 import * as React from "react"
 import {GoogleAuthProvider, getAuth, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailLink, signInWithPopup} from "firebase/auth"
 

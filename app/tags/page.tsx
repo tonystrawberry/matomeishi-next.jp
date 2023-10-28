@@ -38,7 +38,6 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -48,7 +47,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function Tags() {
+function Tags() {
   const router = useRouter()
   const { user } = useContext(AuthContext) as { user: User }
 

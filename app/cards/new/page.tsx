@@ -25,7 +25,7 @@ interface PostBusinessCardsResponse {
   }
 }
 
-export function Card() {
+function NewCard() {
   const router = useRouter()
   const { user } = useContext(AuthContext) as { user: User }
 
@@ -198,4 +198,4 @@ export function Card() {
   )
 }
 
-export default withAuth(Card)
+export default withAuth(NewCard)

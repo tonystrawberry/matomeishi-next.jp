@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 // This is the type of the search tags that are displayed below the search bar
 type SearchTag = Tag & { selected: boolean }
 
-export function Cards() {
+function Cards() {
   const router = useRouter() // This is a hook that gives us access to the router
   const searchParams = useSearchParams() // This is a hook that returns the query string params
 

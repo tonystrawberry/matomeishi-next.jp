@@ -59,7 +59,7 @@ const formSchema = z.object({
   website: z.string().url().optional().or(z.literal('')),
 })
 
-export function Card() {
+function SingleCard() {
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useContext(AuthContext) as { user: User }
@@ -693,4 +693,4 @@ export function Card() {
   )
 }
 
-export default withAuth(Card)
+export default withAuth(SingleCard)

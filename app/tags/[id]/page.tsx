@@ -1,14 +1,14 @@
-"use client"; // This is a client component 👈🏽
+"use client" // This is a client component 👈🏽
 
 // URL: /tags/[id]
 // This page shows the details of a tag.
 // The user can edit the tag details and delete the tag.
 
-import Header from "@/components/header";
+import Header from "@/components/header"
 import './styles.css'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -16,52 +16,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
-  BusinessCard,
-  GetBusinessCardResponse,
   GetTagResponse,
   Tag as TagType,
-} from "@/types/BusinessCard";
-import React, { useState, useEffect, useContext } from "react";
-import * as z from "zod";
-import { useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@/types/BusinessCard"
+import React, { useState, useEffect, useContext } from "react"
+import * as z from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter, useParams } from "next/navigation"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/use-toast"
+import { AuthContext } from "../../../contexts/authContext"
+import withAuth from "@/components/withAuth"
+import { User } from "firebase/auth"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { useRouter, useParams } from "next/navigation";
-import { Textarea } from "@/components/ui/textarea";
-import { toast, useToast } from "@/components/ui/use-toast";
-import { AuthContext } from "../../../contexts/authContext";
-import withAuth from "@/components/withAuth";
-import { User } from "firebase/auth";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
-import {
-  AtSign,
-  Building2,
-  CalendarDays,
-  CalendarIcon,
-  Phone,
-  PlusCircle,
-  Printer,
-  ScrollText,
-  Smartphone,
   UserCircle,
   Tag as TagIcon,
-  Pyramid,
-  AppWindow,
-  GraduationCap,
-  Home,
   Trash2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+} from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -70,22 +47,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { HexColorPicker } from "react-colorful";
+} from "@/components/ui/dialog"
+import { HexColorPicker } from "react-colorful"
 
 // The form schema contains the validation rules for the form (using Zod)
 const formSchema = z.object({
   name: z.string().min(1).max(50),
   description: z.string().optional(),
   color: z.string().optional(),
-});
+})
 
-export function Tag() {
-  const router = useRouter();
-  const { id } = useParams() as { id: string };
-  const { user } = useContext(AuthContext) as { user: User };
+function SingleTag() {
+  const router = useRouter()
+  const { id } = useParams() as { id: string }
+  const { user } = useContext(AuthContext) as { user: User }
 
-  const [tag, setTag] = useState<TagType | null>(null); // Tag details
+  const [tag, setTag] = useState<TagType | null>(null) // Tag details
 
   // Form data (react-hook-form)
   const form = useForm<z.infer<typeof formSchema>>({
@@ -95,12 +72,12 @@ export function Tag() {
       description: undefined,
       color: undefined,
     },
-  });
+  })
 
   useEffect(() => {
     // Fetch the tag details
-    fetchTag(id);
-  }, []);
+    fetchTag(id)
+  }, [])
 
     // Set the form data (react-hook-form) when the tag object is fetched
     useEffect(() => {
@@ -115,7 +92,7 @@ export function Tag() {
   // This function is called when the page is loaded
   const fetchTag = async (id: string) => {
     try {
-      const firebaseToken = await user.getIdToken(); // Get the Firebase access token
+      const firebaseToken = await user.getIdToken() // Get the Firebase access token
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_API_URL}/tags/${id}`,
         { headers: { "x-firebase-token": firebaseToken } }
@@ -125,35 +102,35 @@ export function Tag() {
         throw new Error(`Failed to fetch the tag | ${response.status}`, )
       }
 
-      const data = (await response.json()) as GetTagResponse;
+      const data = (await response.json()) as GetTagResponse
 
-      const tag = data.data.attributes;
+      const tag = data.data.attributes
 
-      setTag(tag);
+      setTag(tag)
     } catch (error) {
-      console.error("[matomeishi]", error);
+      console.error("[matomeishi]", error)
 
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with our server.",
-      });
+      })
 
-      setTag(null);
+      setTag(null)
     }
-  };
+  }
 
   // Function to submit the form data and update the tag
   // Called when the user clicks the "Update" button
   const onSubmitValid = async (values: z.infer<typeof formSchema>) => {
     try {
-      const firebaseToken = await user.getIdToken();
+      const firebaseToken = await user.getIdToken()
 
       const body = JSON.stringify({
         name: values.name,
         description: values.description,
         color: values.color,
-      });
+      })
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_API_URL}/tags/${id}`,
@@ -165,46 +142,46 @@ export function Tag() {
             "Content-Type": "application/json",
           },
         }
-      );
+      )
 
       if (!response.ok) {
         throw new Error(`Failed to update the tag | ${response.status}`, )
       }
 
-      await response.json();
+      await response.json()
 
-      setTag(null);
-      form.reset(); // Reset the form (react-hook-form)
+      setTag(null)
+      form.reset() // Reset the form (react-hook-form)
 
       // Refetch the business card to update the business card page
-      fetchTag(id as string);
+      fetchTag(id as string)
 
       toast({
         title: "We updated your tag.",
         description: "The new information is now used.",
-      });
+      })
     } catch (error) {
-      console.error("[matomeishi]", error);
+      console.error("[matomeishi]", error)
 
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with our server.",
-      });
+      })
     }
-  };
+  }
 
   // Function to show an error message when the form data is invalid
   // Called when the user clicks the "Update" button
   const onSubmitInvalid = (errors: any) => {
-    console.error("[matomeishi]", errors);
+    console.error("[matomeishi]", errors)
 
     toast({
       variant: "destructive",
       title: "Some fields are invalid.",
       description: "Please check the form and try again.",
-    });
-  };
+    })
+  }
 
 
   // Function to remove a business card
@@ -258,7 +235,7 @@ export function Tag() {
         <Button
           variant="secondary"
           onClick={() => {
-            router.push("/cards");
+            router.push("/cards")
           }}
         >
           Back
@@ -384,7 +361,7 @@ export function Tag() {
     </main>
   ) : (
     <Skeleton />
-  );
+  )
 }
 
-export default withAuth(Tag);
+export default withAuth(SingleTag)

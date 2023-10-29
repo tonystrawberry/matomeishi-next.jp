@@ -34,11 +34,18 @@ import withAuth from "@/components/withAuth"
 import { User } from "firebase/auth"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
-import { AtSign, Building2, CalendarDays, CalendarIcon, Phone, PlusCircle, Printer, ScrollText, Smartphone, UserCircle, Tag as TagIcon, Pyramid, AppWindow, GraduationCap, Home, Trash2 } from "lucide-react"
+import { AtSign, Building2, CalendarDays, CalendarIcon, Phone, PlusCircle, Printer, ScrollText, Smartphone, UserCircle, Tag as TagIcon, Pyramid, AppWindow, GraduationCap, Home, Trash2, Megaphone, Ear } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+
+// Utility function to check if a string is a valid URL
+// The default zod url() validator does not allow URLs without a protocol (e.g. "monstarlab.com")
+const isURL = (url: string) => {
+  const urlPattern = /^(https?:\/\/)?([\w.-]+)\.([a-z]{2,})(:\d{1,5})?([/?#].*)?$/i;
+  return urlPattern.test(url);
+};
 
 
 // The form schema contains the validation rules for the form (using Zod)
@@ -49,14 +56,16 @@ const formSchema = z.object({
   email: z.string().email().optional(),
   fax: z.string().optional(),
   first_name: z.string().min(1, { message: "" }), // The first name is required (min length = 1) but do not show an error message
+  first_name_phonetic: z.string().optional(),
   home_phone: z.string().optional(),
   job_title: z.string().optional(),
   last_name: z.string().optional(),
+  last_name_phonetic: z.string().optional(),
   meeting_date: z.date().optional(),
   mobile_phone: z.string().optional(),
   notes: z.string().optional(),
   tags: z.array(z.object({ tagId: z.number().optional(), name: z.string(), color: z.string().optional() })),
-  website: z.string().url().optional().or(z.literal('')),
+  website: z.string().refine((value) => isURL(value), { message: "Invalid URL format",}).optional().or(z.literal('')),
 })
 
 function SingleCard() {
@@ -79,9 +88,11 @@ function SingleCard() {
       email: undefined,
       fax: undefined,
       first_name: undefined,
+      first_name_phonetic: undefined,
       home_phone: undefined,
       job_title: undefined,
       last_name: undefined,
+      last_name_phonetic: undefined,
       meeting_date: new Date(),
       mobile_phone: undefined,
       notes: undefined,
@@ -109,9 +120,11 @@ function SingleCard() {
     form.setValue("email", businessCard?.email ?? undefined)
     form.setValue("fax", businessCard?.fax ?? undefined)
     form.setValue("first_name", businessCard?.first_name ?? "")
+    form.setValue("first_name_phonetic", businessCard?.first_name_phonetic ?? undefined)
     form.setValue("home_phone", businessCard?.home_phone ?? undefined)
     form.setValue("job_title", businessCard?.job_title ?? undefined)
     form.setValue("last_name", businessCard?.last_name ?? undefined)
+    form.setValue("last_name_phonetic", businessCard?.last_name_phonetic ?? undefined)
     form.setValue("meeting_date", businessCard?.meeting_date ? new Date(businessCard?.meeting_date) : new Date())
     form.setValue("mobile_phone", businessCard?.mobile_phone ?? undefined)
     form.setValue("notes", businessCard?.notes ?? undefined)
@@ -209,9 +222,11 @@ function SingleCard() {
         email: values.email,
         fax: values.fax,
         first_name: values.first_name,
+        first_name_phonetic: values.first_name_phonetic,
         home_phone: values.home_phone,
         job_title: values.job_title,
         last_name: values.last_name,
+        last_name_phonetic: values.last_name_phonetic,
         meeting_date: values.meeting_date,
         mobile_phone: values.mobile_phone,
         notes: values.notes,
@@ -402,6 +417,35 @@ function SingleCard() {
                           <FormLabel className="flex items-center gap-2 relative"><UserCircle className="w-4 h-4" />First name <Badge variant="destructive" className="absolute right-0 rounded text-xs ml-1">Required</Badge></FormLabel>
                           <FormControl>
                             <Input placeholder="John Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex gap-4 md:gap-2 flex-col md:flex-row">
+                    <FormField
+                      control={form.control}
+                      name="last_name_phonetic"
+                      render={({ field }) => (
+                        <FormItem className="md:w-1/2 w-full">
+                          <FormLabel className="flex items-center gap-2"><Ear className="w-4 h-4" />Last name (Phonetic)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="first_name_phonetic"
+                      render={({ field }) => (
+                        <FormItem className="md:w-1/2 w-full">
+                          <FormLabel className="flex items-center gap-2"><Ear className="w-4 h-4" />First name (Phonetic)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

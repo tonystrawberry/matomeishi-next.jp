@@ -17,7 +17,7 @@ import { Pagination, PaginationInfo } from "@/components/pagination"
 import withAuth from "../../components/withAuth"
 import { User } from "firebase/auth"
 import { toast } from "@/components/ui/use-toast"
-import { FileSpreadsheet, WalletCards } from "lucide-react"
+import { FileSpreadsheet, Palmtree, PlusCircle, WalletCards } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // This is the type of the search tags that are displayed below the search bar
@@ -443,15 +443,32 @@ function Cards() {
               </div>
             </div>
           ))}
+
+          {/* No business cards */}
+          {businessCards.length === 0 &&
+            <div className="col-span-full flex flex-col items-center justify-center">
+              <div className="text-xl font-semibold mb-2">
+                No business cards found 🥲
+              </div>
+              <div className="text-muted-foreground mb-4">Try changing your search query or filters</div>
+
+              <Button onClick={() => { router.push("/cards/new")}}>
+                <PlusCircle className="w-4 h-4 mr-2" />
+                <span>Business Card</span>
+              </Button>
+            </div>
+          }
         </div>
 
-        {/* Pagination */}
-        <div className="pt-8 pb-16">
-          <Pagination
-            paginationInfo={paginationInfo}
-            onChangePage={onChangePage}
-          />
-        </div>
+        {/* Pagination (only when there is some business cards */}
+        { businessCards.length !== 0 &&
+          <div className="pt-8 pb-16">
+            <Pagination
+              paginationInfo={paginationInfo}
+              onChangePage={onChangePage}
+            />
+          </div>
+        }
       </div>
     </main>
   )

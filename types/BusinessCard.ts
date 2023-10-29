@@ -7,9 +7,11 @@ export interface BusinessCard {
   email: string;
   fax: string;
   first_name: string;
+  first_name_phonetic: string;
   home_phone: string;
   job_title: string;
   last_name: string;
+  last_name_phonetic: string;
   meeting_date: string;
   mobile_phone: string;
   notes: string;

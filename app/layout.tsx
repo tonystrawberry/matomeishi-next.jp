@@ -11,7 +11,7 @@ export const fontSans = FontSans({
 })
 
 export const metadata: Metadata = {
-  title: 'Matomeishi',
+  title: 'matomeishi',
   description: 'The best way to manage your business cards.',
 }
 

@@ -359,7 +359,7 @@ function SingleCard() {
           >
             Back
           </Button>
-          <div className="ml-auto text-left md:ml-0 ">
+          <div className="ml-auto text-center md:ml-0 ">
             <div className="flex items-center justify-end md:justify-center">
               <UserCircle className="mr-2 h-6 w-6" />
               {businessCard ? <h1 className="text-2xl font-semibold">{businessCard?.last_name} {businessCard?.first_name}</h1> : <Skeleton className="w-40 h-6" />}

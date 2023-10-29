@@ -7,15 +7,17 @@
   matomeishi.vercel.app
 </h1>
 
-The application I've developed is a versatile web-based platform accessible on both desktop and mobile browsers.
+matomeishi is a versatile web-based platform accessible on both desktop and mobile browsers 🖥
 
-It offers a seamless solution for effortlessly managing business cards. Users can easily scan and store their business cards, utilizing Optical Character Recognition (OCR) technology to extract and identify text information from the cards 🤖
+It offers a seamless solution for effortlessly **managing business cards**. Users can easily scan and store their business cards, utilizing **Optical Character Recognition (OCR)** technology to **extract and identify text information** from the cards 🤖
 
-This feature enables automatic population of relevant fields, reducing manual data entry 📝
+This feature enables **automatic population of relevant fields**, reducing manual data entry 📝
 
-The application also includes a robust search functionality, allowing users to quickly retrieve cards using free-text queries or associated tags 🔍
+The application also includes a **robust search functionality**, allowing users to quickly retrieve cards using free-text queries or associated tags 🔍
 
- With this tool, individuals no longer need to juggle physical business cards. They can simply upload them to the application and dispose of the physical copies, streamlining their networking and contact management experience 🤩
+With this tool, individuals **no longer need to juggle physical business cards**. They can simply upload them to the application and dispose of the physical copies, streamlining their networking and contact management experience 🤩
+
+<a href="https://matomeishi.vercel.app" target="_blank">**matomeishi.vercel.app**</a>
 
 ## 📚 Technologies
 ```
@@ -27,9 +29,9 @@ shadcn/ui
 Firebase Authentication
 ```
 
-- 🚀 matomeishi (front-end) is implemented with NextJS 13 and deployed with <a href="https://vercel.com/tonystrawberry/matomeishi" target="_blank">Vercel</a>
+- 🚀 **matomeishi (front-end)** is implemented with **NextJS 13** and deployed with <a href="https://vercel.com/tonystrawberry/matomeishi" target="_blank">**Vercel**</a>
 
-- 🖥 matomeishi (back-end) is implemented with <a href="https://github.com/tonystrawberry/matomeishi-rails.jp" target="_blank">Rails API</a>
+- 🖥 **matomeishi (back-end)** is implemented with <a href="https://github.com/tonystrawberry/matomeishi-rails.jp" target="_blank">**Rails API**</a>
 
 ## 🛠 Local development
 

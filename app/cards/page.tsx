@@ -29,11 +29,12 @@ function Cards() {
 
   const { user } = useContext(AuthContext) as { user: User }
 
-  const [businessCards, setBusinessCards] = useState<BusinessCard[]>([]) // Corresponds to the list of business cards fetched from the API
+  const [businessCards, setBusinessCards] = useState<BusinessCard[] | null>([]) // Corresponds to the list of business cards fetched from the API
   const [search, setSearch] = useState<string>("") // Corresponds to the user input in the search bar
   const [searchTags, setSearchTags] = useState<SearchTag[]>([]) // Corresponds to the tags that are displayed below the search bar
   const [params, setParams] = useState<URLSearchParams>(new URLSearchParams()) // Corresponds to the params that we will use to fetch data
   const [isLoadingCsv, setIsLoadingCsv] = useState<boolean>(false) // isLoadingCsv is true when the user clicks the "Export as CSV" button
+  const [isLoadingBusinessCards, setIsLoadingBusinessCards] = useState<boolean>(true) // isLoading is true when we are fetching business cards from the API
 
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
     currentPage: 1,
@@ -106,8 +107,11 @@ function Cards() {
   // Function to fetch business cards from API
   const fetchBusinessCards = async () => {
     try {
+      setBusinessCards(null)
+      setIsLoadingBusinessCards(true)
       const firebaseToken = await user.getIdToken() // Get the Firebase access token
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards?${params.toString()}`, { headers: { "x-firebase-token": firebaseToken }})
+      setIsLoadingBusinessCards(false)
 
       if (!response.ok) {
         throw new Error(`Failed to fetch the business cards | ${response.status}`, )
@@ -384,7 +388,7 @@ function Cards() {
           <h1 className="text-2xl font-semibold">Gallery</h1>
 
           {/* Export CSV button */}
-          <Button className="ml-auto" onClick={onClickExportCsv}><FileSpreadsheet className="w-4 h-4 mr-2" />Export as CSV</Button>
+          <Button className="ml-auto" onClick={onClickExportCsv} disabled={isLoadingCsv}><FileSpreadsheet className="w-4 h-4 mr-2" />Export as CSV</Button>
         </div>
 
         {/* Search bar */}
@@ -412,7 +416,7 @@ function Cards() {
 
         {/* Business cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 my-4">
-          {businessCards.map((businessCard) => (
+          {businessCards && businessCards.map((businessCard) => (
             <div
               key={businessCard.code}
               className="bg-white rounded-md shadow cursor-pointer hover:shadow-lg transition duration-250 overflow-hidden"
@@ -445,7 +449,7 @@ function Cards() {
           ))}
 
           {/* No business cards */}
-          {businessCards.length === 0 &&
+          {businessCards && businessCards.length === 0 &&
             <div className="col-span-full flex flex-col items-center justify-center">
               <div className="text-xl font-semibold mb-2">
                 No business cards found 🥲
@@ -458,10 +462,19 @@ function Cards() {
               </Button>
             </div>
           }
+
+          {/* Loading */}
+          {isLoadingBusinessCards &&
+            <div className="col-span-full flex flex-col items-center justify-center">
+              <div className="animate-pulse w-32 h-32 bg-black rounded-full flex justify-center items-center text-white">
+                <Palmtree className="w-16 h-16"/>
+              </div>
+            </div>
+          }
         </div>
 
         {/* Pagination (only when there is some business cards */}
-        { businessCards.length !== 0 &&
+        { businessCards && businessCards.length !== 0 &&
           <div className="pt-8 pb-16">
             <Pagination
               paginationInfo={paginationInfo}

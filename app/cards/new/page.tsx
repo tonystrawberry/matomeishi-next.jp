@@ -126,72 +126,84 @@ function NewCard() {
   // Callback function when the user clicks the "Add & Analyze" button
   // The user will be redirected to the business card page after the server responds
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault() // Prevent the form from submitting
-    setAnalyzing(true)
+    try {
+        e.preventDefault() // Prevent the form from submitting
+        setAnalyzing(true)
 
-    // Check if the user uploaded both front and back images
-    if (!frontImage) {
-      toast({
-        title: "We need at least the front image.",
-        description: "Please upload the front image of the business card.",
-      })
+        // Check if the user uploaded both front and back images
+        if (!frontImage) {
+          toast({
+            title: "We need at least the front image.",
+            description: "Please upload the front image of the business card.",
+          })
 
-      setAnalyzing(false)
-      return
-    }
-
-    // Create a FormData object to send the images to the server
-    const formData = new FormData()
-    formData.set("front_image", frontImage as Blob)
-    formData.set("back_image", backImage as Blob)
-    formData.set("language_hints", JSON.stringify(businessCardLanguages.filter((l) => l.checked).map((l) => l.languageCode)))
-
-    // Show a toast message if telling the business card is being analyzed
-    toast({
-      title: "Analyzing business card...",
-      description: "Please wait while we analyze your business card.",
-    })
-
-    // Save the language hints to local storage
-    // So the user can save time when they add another business card
-    window.localStorage.setItem(
-      "languageHints",
-      JSON.stringify(businessCardLanguages.filter((l) => l.checked).map((l) => l.languageCode))
-    )
-
-    // Send the images to the server to analyze
-    const firebaseToken = await user.getIdToken()
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards`,
-      {
-        method: "POST",
-        body: formData,
-        headers: { "x-firebase-token": firebaseToken },
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to upload the business card | ${response.status}`
-      )
-    }
-
-    const data = (await response.json()) as PostBusinessCardsResponse
-
-    setAnalyzing(false) // Set analyzing state to false after the server responds
-    router.push(`/cards/${data.data.attributes.code}`) // Redirect the user to the business card page
-  }
-
-  // Callback function when the user clicks the checkbox of a supported language
-  const onClickLanguageCheckbox = (languageCode: string, checked: Checked) => {
-    setbusinessCardLanguages((prev) =>
-      prev.map((l) => {
-        if (l.languageCode === languageCode) {
-          return { ...l, checked }
+          setAnalyzing(false)
+          return
         }
 
-        return l
-      })
+        // Create a FormData object to send the images to the server
+        const formData = new FormData()
+        formData.set("front_image", frontImage as Blob)
+        formData.set("back_image", backImage as Blob)
+        formData.set("language_hints", JSON.stringify(businessCardLanguages.filter((l) => l.checked).map((l) => l.languageCode)))
+
+        // Show a toast message if telling the business card is being analyzed
+        toast({
+          title: "Analyzing business card...",
+          description: "Please wait while we analyze your business card.",
+        })
+
+        // Save the language hints to local storage
+        // So the user can save time when they add another business card
+        window.localStorage.setItem(
+          "languageHints",
+          JSON.stringify(businessCardLanguages.filter((l) => l.checked).map((l) => l.languageCode))
+        )
+
+        // Send the images to the server to analyze
+        const firebaseToken = await user.getIdToken()
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards`,
+          {
+            method: "POST",
+            body: formData,
+            headers: { "x-firebase-token": firebaseToken },
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to upload the business card | ${response.status}`
+          )
+        }
+
+        const data = (await response.json()) as PostBusinessCardsResponse
+
+        setAnalyzing(false) // Set analyzing state to false after the server responds
+        router.push(`/cards/${data.data.attributes.code}`) // Redirect the user to the business card page
+      } catch (error) {
+        console.error("[matomeishi]", error)
+
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with our server.",
+        })
+
+        setAnalyzing(false)
+      }
+    }
+
+    // Callback function when the user clicks the checkbox of a supported language
+    const onClickLanguageCheckbox = (languageCode: string, checked: Checked) => {
+      setbusinessCardLanguages((prev) =>
+        prev.map((l) => {
+          if (l.languageCode === languageCode) {
+            return { ...l, checked }
+          }
+
+          return l
+        })
     )
   }
 

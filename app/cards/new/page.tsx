@@ -71,7 +71,7 @@ function NewCard() {
   useEffect(() => {
     // Set the language hints from local storage
     const languageHints = window.localStorage.getItem("languageHints")
-    console.log(languageHints)
+
     if (languageHints) {
       setbusinessCardLanguages((prev) =>
         prev.map((l) => {

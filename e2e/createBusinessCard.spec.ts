@@ -10,8 +10,8 @@ test('should navigate to the card creation page', async ({ page }) => {
   // The login page should have redirected to the cards page (check the URL)
   await expect(page).toHaveURL('/cards');
 
-  // Go to the card creation page
-  await page.click('button:has-text("Business Card")');
+  // Go to the card creation page by clicking on the div with `role="menuitem"` and the text "Business Card"
+  await page.click('div[role="menuitem"]:has-text("Business Card")');
 
   // Wait for the card creation page to load
   await page.waitForURL('/cards/new');

@@ -310,6 +310,7 @@ function NewCard() {
                   <div className="text-sm font-semibold relative">Front Image<Badge variant="destructive" className="absolute right-0 rounded text-xs ml-1">Required</Badge></div>
                 </div>
                 <input
+                  id="front"
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                   type="file"
                   accept="image/png, image/gif, image/jpeg"
@@ -339,6 +340,7 @@ function NewCard() {
               <div className="mb-4">
                 <div className="text-sm font-semibold mb-2">Back Image</div>
                 <input
+                  id="back"
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                   type="file"
                   accept="image/png, image/gif, image/jpeg"

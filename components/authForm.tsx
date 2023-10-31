@@ -4,7 +4,7 @@
 // Shows the authentication form (sign in with email, sign in with Google)
 
 import * as React from "react"
-import {GoogleAuthProvider, getAuth, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailLink, signInWithPopup} from "firebase/auth"
+import {GoogleAuthProvider, getAuth, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithEmailLink, signInWithPopup} from "firebase/auth"
 
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
@@ -33,10 +33,41 @@ export function AuthForm({ className, ...props }: AuthFormProps) {
   const auth = getAuth(app)
 
   useEffect(() => {
+    executeSignInWithEmailPassword() // Only if email and password is set in the URL
     executeSignInWithEmailLink()
   }, [])
 
   /***** Functions *****/
+
+  // Sign in with email and password
+  // Check if the URL contains a query string email and password (that would mean that e2e tests are running)
+  // Reference: https://firebase.google.com/docs/auth/web/password-auth#sign_in_a_user_with_an_email_address_and_password
+  const executeSignInWithEmailPassword = () => {
+    // Get the `email` and `password` query string parameters
+    const params = new URLSearchParams(window.location.search)
+    const email = params.get('email')
+    const password = params.get('password')
+
+    // Check if the email and password are set
+    if (email && password) {
+      setIsLoading(true)
+
+      // Sign in the user with their email address and password
+      signInWithEmailAndPassword(auth, email, password)
+        .then((_result) => {
+          router.push("/cards") // Redirect to /cards page after successful sign in
+        })
+        .catch((error) => {
+          console.error("[matomeishi]", error)
+
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with our server.",
+          })
+        })
+    }
+  }
 
   // Sign in with email link containing the apiKey query string parameter
   // Check if the URL contains a query string apiKey (that would mean the user clicked the sign in link in their email

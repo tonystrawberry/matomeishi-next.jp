@@ -50,8 +50,11 @@ test('should create a business card', async ({ page }) => {
   // Wait for the cards page to load
   await page.waitForURL('/cards');
 
-  // Go to the card creation page
-  await page.click('button:has-text("Business Card")');
+  // Click on the menu button (containing aria-haspopup="menu") in the header to open the menu
+  await page.click('button[aria-haspopup="menu"]');
+
+  // Go to the card creation page by clicking on the div with `role="menuitem"` and the text "Business Card"
+  await page.click('div[role="menuitem"]:has-text("Business Card")');
 
   // Click on the "Modify" button
   await page.click('button:has-text("Modify")');
@@ -60,13 +63,17 @@ test('should create a business card', async ({ page }) => {
   await page.click('div:has-text("French")');
   await page.click('div:has-text("Japanese")');
 
+  // Click on the first input with id="front"
+  await page.click('input#front');
+
   // Upload the front image
-  const inputFileFront = await page.$('input[type="file"]');
-  await inputFileFront?.setInputFiles('e2e/assets/business-card-front.jpg');
+  await page.setInputFiles('input#front', 'e2e/assets/business-card-front.jpg');
+
+  // Click on the first input with id="front"
+  await page.click('input#back');
 
   // Upload the back image
-  const inputFileBack = await page.$('input[type="file"]:nth-child(2)');
-  await inputFileBack?.setInputFiles('e2e/assets/business-card-back.jpg');
+  await page.setInputFiles('input#back', 'e2e/assets/business-card-back.jpg');
 
   // Click on the "Add & Analyze" button
   await page.click('button:has-text("Add & Analyze")');
@@ -74,8 +81,17 @@ test('should create a business card', async ({ page }) => {
   // The "Add & Analyze" button should be disabled (class name should contain "disabled")
   await expect(page.locator('button:has-text("Add & Analyze")')).toHaveClass(/disabled/);
 
-  // Wait for the card single page to load
-  await page.waitForURL('/cards/**');
+  const response = await page.waitForResponse(response =>
+    response.url().includes("http://localhost:3000/api/v1/business_cards") &&
+    response.status() === 201 &&
+    response.request().method() === "POST"
+) ;
+
+  const body = await (await response.body()).toString();
+  const code = JSON.parse(body).data.attributes.code;
+
+  // Wait for the page to redirect (detect the URL change)
+  await page.waitForURL(`/cards/${code}`);
 
   // The card single page should contain an h1 with "Mori Taiki" (the name of the business card)
   await expect(page.locator('h1')).toContainText('Mori Taiki');

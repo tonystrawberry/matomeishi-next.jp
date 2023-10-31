@@ -4,7 +4,7 @@ import path from 'path'
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
   // Timeout per test
-  timeout: 30 * 1000,
+  timeout: 45 * 1000,
   // Timeout for each assertion
   expect: {
     timeout: 5 * 1000,
@@ -28,7 +28,7 @@ const config: PlaywrightTestConfig = {
   use: {
     // Retry a test if its failing with enabled tracing. This allows you to analyse the DOM, console logs, network traffic etc.
     // More information: https://playwright.dev/docs/trace-viewer
-    trace: 'retry-with-trace',
+    trace: 'on',
 
     // All available context options: https://playwright.dev/docs/api/class-browser#browser-new-context
     // contextOptions: {

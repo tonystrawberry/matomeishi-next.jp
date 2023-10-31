@@ -44,6 +44,8 @@ test('should navigate to the card creation page', async ({ page }) => {
 });
 
 test('should create a business card', async ({ page }) => {
+  test.setTimeout(60 * 1000); // 60 seconds timeout because the API call can take a while
+
   // Start from the index page with the e2eToken query parameter
   await page.goto(`/?email=e2e@matomeishi.com&password=ffb33b8d805962d5e58834735533fd2c32c2e0a277e79d92db6bd7c7e26bb6e7e885a94db717dab6a42953a573163a9e2bbe268d84dda6e29cb71efb9df74e42`);
 

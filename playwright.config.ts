@@ -4,7 +4,7 @@ import path from 'path'
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
   // Timeout per test
-  timeout: 45 * 1000,
+  timeout: 20 * 1000,
   // Timeout for each assertion
   expect: {
     timeout: 5 * 1000,

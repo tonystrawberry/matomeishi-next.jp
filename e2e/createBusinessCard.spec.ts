@@ -84,7 +84,7 @@ test('should create a business card', async ({ page }) => {
   await expect(page.locator('button:has-text("Add & Analyze")')).toHaveClass(/disabled/);
 
   const response = await page.waitForResponse(response =>
-    response.url().includes("http://localhost:3000/api/v1/business_cards") &&
+    response.url().includes(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards`) &&
     response.status() === 201 &&
     response.request().method() === "POST"
 ) ;

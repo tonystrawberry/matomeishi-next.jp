@@ -7,6 +7,8 @@
   matomeishi.vercel.app
 </h1>
 
+[![Playwright Tests](https://github.com/tonystrawberry/matomeishi-next.jp/actions/workflows/playwright.yml/badge.svg)](https://github.com/tonystrawberry/matomeishi-next.jp/actions/workflows/playwright.yml)
+
 matomeishi is a versatile web-based platform accessible on both desktop and mobile browsers 🖥
 
 It offers a seamless solution for effortlessly **managing business cards**. Users can easily scan and store their business cards, utilizing **Optical Character Recognition (OCR)** technology to **extract and identify text information** from the cards 🤖

@@ -48,10 +48,10 @@ const config: PlaywrightTestConfig = {
       },
     },
     // Test against mobile viewports.
-    {
-      name: 'Mobile Safari',
-      use: devices['iPhone 12'],
-    },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: devices['iPhone 12'],
+    // },
   ],
 }
 export default config

@@ -7,11 +7,11 @@ test('should navigate to the card creation page', async ({ page }) => {
   // Wait for the cards page to load
   await page.waitForURL('/cards');
 
-  // Click on the menu button (containing aria-haspopup="menu") in the header to open the menu
-  await page.click('button[aria-haspopup="menu"]');
-
   // The login page should have redirected to the cards page (check the URL)
   await expect(page).toHaveURL('/cards');
+
+  // Click on the menu button (containing aria-haspopup="menu") in the header to open the menu
+  await page.click('button[aria-haspopup="menu"]');
 
   // Go to the card creation page by clicking on the div with `role="menuitem"` and the text "Business Card"
   await page.click('div[role="menuitem"]:has-text("Business Card")');

@@ -1,15 +1,41 @@
 import { test, expect } from '@playwright/test';
 
-test('should navigate to the card creation page', async ({ page }) => {
+
+test.use({ storageState: 'playwright/.auth/user.json' });
+
+test.beforeEach(async ({ page }) => {
   // Start from the index page with the e2eToken query parameter
-  await page.goto(`/?email=e2e@matomeishi.com&password=ffb33b8d805962d5e58834735533fd2c32c2e0a277e79d92db6bd7c7e26bb6e7e885a94db717dab6a42953a573163a9e2bbe268d84dda6e29cb71efb9df74e42`);
+  await page.goto(`/`);
 
-  // Wait for the cards page to load
-  await page.waitForURL('/cards');
+  // Get the authentication data from the `playwright/.auth/user.json` file (using readFileSync)
+  const auth = JSON.parse(require('fs').readFileSync('playwright/.auth/user.json', 'utf8'));
 
-  // The login page should have redirected to the cards page (check the URL)
-  await expect(page).toHaveURL('/cards');
+  // Set the authentication data in the indexedDB of the page to authenticate the user
+  await page.evaluate(auth => {
+    // Open the IndexedDB database
+    const indexedDB = window.indexedDB;
+    const request = indexedDB.open('firebaseLocalStorageDb');
 
+    request.onsuccess = function (event: any) {
+      const db = event.target.result;
+
+      // Start a transaction to access the object store (firebaseLocalStorage)
+      const transaction = db.transaction(['firebaseLocalStorage'], 'readwrite');
+      const objectStore = transaction.objectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
+
+      // Loop through the localStorage data inside the `playwright/.auth/user.json` and add it to the object store
+      const localStorage = auth.origins[0].localStorage;
+
+      for (const element of localStorage) {
+        const value = element.value;
+
+        objectStore.put(JSON.parse(value));
+      }
+    }
+  }, auth)
+});
+
+test('should navigate to the card creation page', async ({ page }) => {
   // Click on the menu button (containing aria-haspopup="menu") in the header to open the menu
   await page.click('button[aria-haspopup="menu"]');
 
@@ -49,10 +75,10 @@ test('should navigate to the card creation page', async ({ page }) => {
 test('should create a business card', async ({ page }) => {
   test.setTimeout(60 * 1000); // 60 seconds timeout because the API call can take a while
 
-  // Start from the index page with the e2eToken query parameter
-  await page.goto(`/?email=e2e@matomeishi.com&password=ffb33b8d805962d5e58834735533fd2c32c2e0a277e79d92db6bd7c7e26bb6e7e885a94db717dab6a42953a573163a9e2bbe268d84dda6e29cb71efb9df74e42`);
+  // Start from the cards page
+  await page.goto(`/`);
 
-  // Wait for the cards page to load
+  // The login page should have redirected to the cards page (check the URL)
   await page.waitForURL('/cards');
 
   // Click on the menu button (containing aria-haspopup="menu") in the header to open the menu
@@ -90,7 +116,7 @@ test('should create a business card', async ({ page }) => {
     response.url().includes(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards`) &&
     response.status() === 201 &&
     response.request().method() === "POST"
-) ;
+  );
 
   const body = await (await response.body()).toString();
   const code = JSON.parse(body).data.attributes.code;

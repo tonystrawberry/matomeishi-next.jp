@@ -13,6 +13,8 @@ env:
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
   NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID }}
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+
+  E2E_FIREBASE_USER_PASSWORD: ${{ secrets.E2E_FIREBASE_USER_PASSWORD }}
 jobs:
   test:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'

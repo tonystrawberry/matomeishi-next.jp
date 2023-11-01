@@ -1,5 +1,10 @@
+
+
 import { PlaywrightTestConfig, devices } from '@playwright/test'
 import path from 'path'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
 // Reference: https://playwright.dev/docs/test-configuration
 const config: PlaywrightTestConfig = {
@@ -42,10 +47,15 @@ const config: PlaywrightTestConfig = {
 
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
       },
+      dependencies: ['setup'],
     },
     // Test against mobile viewports.
     // {

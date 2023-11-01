@@ -6,7 +6,7 @@ setup('authenticate', async ({ page }) => {
   // Perform authentication steps
   // Start from the index page with the e2eToken query parameter
   // That will automatically log in the user
-  await page.goto(`/?email=e2e@matomeishi.com&password=${process.env.E2E_FIREBASE_USER_PASSWORD}}`);
+  await page.goto(`/?email=e2e@matomeishi.com&password=${process.env.E2E_FIREBASE_USER_PASSWORD}`);
 
   // Wait until the page redirects to the cards page and stores the authentication data in the browser
   await page.waitForURL('/cards');

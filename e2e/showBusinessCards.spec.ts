@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { authenticate } from "./utils/authenticate";
 
-
+test.beforeEach(async ({ page }) => {
+  await authenticate(page);
+});
 
 test('should navigate to the cards page (empty case)', async ({ page }) => {
   // Start from the index page with the e2eToken query parameter

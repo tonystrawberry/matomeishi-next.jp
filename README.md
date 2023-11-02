@@ -105,3 +105,11 @@ It shows an loading page while the authentication status is being checked. If th
 - I didn't make use of server-side rendering (SSR) provided by NextJS. I would like to explore this feature in the future.
 
 - First time using Playwright. It was easy to write E2E tests with Playwright. I was able to write tests for the most important features of the application. I also learned how to use GitHub Actions to run the tests automatically after the application is deployed to the production environment.
+
+## 💪 Challenges
+
+- For my Playwright tests, I had to add an authentication step for my tests requiring the user to login to the application.
+  In the first version of my tests, all the tests had the same code for the authentication step which was not DRY.
+  According to Playwright documentation, it seemed we can make use of `storageState` to share the state of the browser context between tests (https://playwright.dev/docs/auth#basic-shared-account-in-all-tests).
+  The problem is that I use Firebase authentication and the authentication state is stored in the browser's IndexedDB. Unfortunately, Playwright does not support IndexedDB with `storageState`. I had to come up with a custom solution that I explained here: https://github.com/microsoft/playwright/issues/11164#issuecomment-1789950254
+  Spent 3 hours on this issue but it was worth it. Code is DRY, the tests are faster and I learned a lot about Playwright along the way.

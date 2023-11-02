@@ -53,6 +53,9 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
+# This environment variable is required for Playwright tests.
+# It is used to login as a test user.
+E2E_FIREBASE_USER_PASSWORD=
 ```
 
 2. Run the following commands.
@@ -73,6 +76,21 @@ http://localhost:3001
 The application is deployed to production with <a href="https://vercel.com/tonystrawberry/matomeishi" target="_blank">Vercel</a> every time a pull request is merged into the `main` branch.
 Vercel also has preview deployments enabled for pull requests.
 
+## ✅ Playwright E2E Tests
+
+I have implemented <a href="https://playwright.dev/" target="_blank">Playwright</a> E2E tests for the application.
+
+The tests are run on GitHub Actions after the application is deployed to the production environment (following a push in the `main` branch).
+See: https://github.com/tonystrawberry/matomeishi-next.jp/actions/workflows/playwright.yml
+
+The tests can also be run locally with the following steps.
+1. Run the Rails web server. Please check the <a href="https://github.com/tonystrawberry/matomeishi-rails.jp" target="_blank">backend repository</a> for more details.
+2. Set the E2E_FIREBASE_USER_PASSWORD environment variable in the `.env.local` file. It should the password of the test user whose email is `e2e@matomeishi.com`. I created this user manually in the Firebase project.
+3. Run the following commands.
+```
+$ npm run test:e2e
+```
+
 ## 📝 Memo to myself
 
 - The use of HOC (Higher Order Component) was perfect for checking if the user is authenticated or not (see `withAuth.tsx`). I was able to reuse the logic in multiple pages.
@@ -85,3 +103,5 @@ It shows an loading page while the authentication status is being checked. If th
 - First time using Tailwind CSS. It was a good practice to use Tailwind CSS to avoid writing custom CSS. It was easy to customize the UI and the UI was consistent throughout the application. No supplementary CSS was written 🎉
 
 - I didn't make use of server-side rendering (SSR) provided by NextJS. I would like to explore this feature in the future.
+
+- First time using Playwright. It was easy to write E2E tests with Playwright. I was able to write tests for the most important features of the application. I also learned how to use GitHub Actions to run the tests automatically after the application is deployed to the production environment.

@@ -17,8 +17,12 @@ import { Pagination, PaginationInfo } from "@/components/pagination"
 import withAuth from "../../components/withAuth"
 import { User } from "firebase/auth"
 import { toast } from "@/components/ui/use-toast"
-import { FileSpreadsheet, Palmtree, PlusCircle, WalletCards } from "lucide-react"
+import { FileSpreadsheet, Palmtree, PlusCircle, SlidersHorizontal, WalletCards } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { DateRange } from "react-day-picker"
+import format from "date-format"
 
 // This is the type of the search tags that are displayed below the search bar
 type SearchTag = Tag & { selected: boolean }
@@ -35,6 +39,7 @@ function Cards() {
   const [params, setParams] = useState<URLSearchParams>(new URLSearchParams()) // Corresponds to the params that we will use to fetch data
   const [isLoadingCsv, setIsLoadingCsv] = useState<boolean>(false) // isLoadingCsv is true when the user clicks the "Export as CSV" button
   const [isLoadingBusinessCards, setIsLoadingBusinessCards] = useState<boolean>(true) // isLoading is true when we are fetching business cards from the API
+  const [meetingDatesRange, setMeetingDatesRange] = useState<DateRange | undefined>({ from: undefined, to: undefined}) // Corresponds to the range of meeting dates selected by the user
 
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
     currentPage: 1,
@@ -50,6 +55,8 @@ function Cards() {
     const page = searchParams.get('page')
     const q = searchParams.get('q')
     const tags = searchParams.getAll('tags[]')
+    const meetingDateFrom = searchParams.get('meeting_date_from')
+    const meetingDateTo = searchParams.get('meeting_date_to')
 
     // Reload the page without query string if any of the params are not valid
     // Reload page without query string if page is not a number
@@ -90,6 +97,20 @@ function Cards() {
       }
     })
 
+    // Set meeting date from if it is not null
+    if (meetingDateFrom) {
+      newParams.set("meeting_date_from", meetingDateFrom)
+    }
+
+    // Set meeting date to if it is not null
+    if (meetingDateTo) {
+      newParams.set("meeting_date_to", meetingDateTo)
+    }
+
+    setMeetingDatesRange({
+      from: meetingDateFrom ? new Date(meetingDateFrom) : undefined,
+      to: meetingDateTo ? new Date(meetingDateTo) : undefined,
+    }) // Set the meeting dates range to the query string
     setSearch(q || "") // Set the search string to the query string
     setParams(newParams) // Set the params that we will use to fetch data
   }, [])
@@ -340,6 +361,36 @@ function Cards() {
     window.history.pushState({}, "", window.location.pathname + "?" + copiedParams.toString()) // Change URL to append page number (without reloading the page)
   }
 
+  // Callback function for when the meeting dates range is changed
+  // Called when we select a range of dates in the calendar
+  // This function will change the query string (also params state) and call fetchBusinessCards()
+  const onChangeMeetingDatesRange = async (meetingDatesRange: DateRange | undefined) => {
+    const copiedParams = new URLSearchParams(params) // Copy the params
+
+    // Reset page to 1 if meeting dates range is changed
+    copiedParams.set("page", "1")
+
+    console.log(meetingDatesRange)
+
+    // Add meeting dates range to params if it is not null
+    if (meetingDatesRange?.from) {
+      copiedParams.set("meeting_date_from", format.asString('yyyy-MM-dd', meetingDatesRange.from))
+    } else {
+      copiedParams.delete('meeting_date_from')
+    }
+
+    if (meetingDatesRange?.to) {
+      copiedParams.set("meeting_date_to", format.asString('yyyy-MM-dd', meetingDatesRange.to))
+    } else {
+      copiedParams.delete('meeting_date_to')
+    }
+
+    setParams(copiedParams) // Set the params state with the new meeting dates range
+    setMeetingDatesRange(meetingDatesRange) // Set the meeting dates range state with the new meeting dates range
+
+    window.history.pushState({}, "", window.location.pathname + "?" + copiedParams.toString()) // Change URL to append page number (without reloading the page)
+  }
+
   // Callback function for when the "Export as CSV" button is clicked
   // Called when we click on the "Export as CSV" button
   // This function will call the API to export the business cards as CSV
@@ -391,13 +442,42 @@ function Cards() {
           <Button className="ml-auto" onClick={onClickExportCsv} disabled={isLoadingCsv}><FileSpreadsheet className="w-4 h-4 mr-2" />Export as CSV</Button>
         </div>
 
-        {/* Search bar */}
-        <Input
-          placeholder="Search..."
-          className="w-full"
-          value={search}
-          onChange={(e) => onChangeQ(e.target.value)}
-        />
+        <div className="flex">
+          {/* Search bar */}
+          <Input
+            placeholder="Search..."
+            className="w-full"
+            value={search}
+            onChange={(e) => onChangeQ(e.target.value)}
+          />
+
+          <Popover>
+            <PopoverTrigger>
+              <Button className="ml-2">
+                <SlidersHorizontal className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent className="w-80">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                <h4 className="font-medium leading-none">Meeting date</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Select the range of meeting dates
+                  </p>
+
+                  <Calendar
+                    mode="range"
+                    defaultMonth={new Date()}
+                    selected={meetingDatesRange}
+                    onSelect={onChangeMeetingDatesRange}
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
 
         {/* Search tags */}
         <div className="p-4">

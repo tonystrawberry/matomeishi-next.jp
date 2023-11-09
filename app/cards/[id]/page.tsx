@@ -93,7 +93,7 @@ function SingleCard() {
       job_title: undefined,
       last_name: undefined,
       last_name_phonetic: undefined,
-      meeting_date: new Date(),
+      meeting_date: undefined,
       mobile_phone: undefined,
       notes: undefined,
       tags: [],
@@ -125,7 +125,7 @@ function SingleCard() {
     form.setValue("job_title", businessCard?.job_title ?? undefined)
     form.setValue("last_name", businessCard?.last_name ?? undefined)
     form.setValue("last_name_phonetic", businessCard?.last_name_phonetic ?? undefined)
-    form.setValue("meeting_date", businessCard?.meeting_date ? new Date(businessCard?.meeting_date) : new Date())
+    form.setValue("meeting_date", businessCard?.meeting_date ? new Date(businessCard?.meeting_date) : undefined)
     form.setValue("mobile_phone", businessCard?.mobile_phone ?? undefined)
     form.setValue("notes", businessCard?.notes ?? undefined)
     form.setValue("website", businessCard?.website ?? undefined)

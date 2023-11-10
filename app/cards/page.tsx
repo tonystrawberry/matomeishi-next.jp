@@ -17,12 +17,13 @@ import { Pagination, PaginationInfo } from "@/components/pagination"
 import withAuth from "../../components/withAuth"
 import { User } from "firebase/auth"
 import { toast } from "@/components/ui/use-toast"
-import { FileSpreadsheet, Palmtree, PlusCircle, SlidersHorizontal, WalletCards } from "lucide-react"
+import { AppWindow, AtSign, Building2, CalendarDays, Ear, FileSpreadsheet, GraduationCap, Home, Palmtree, Phone, PlusCircle, Printer, Pyramid, ScrollText, SlidersHorizontal, Smartphone, UserCircle, View, WalletCards } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { DateRange } from "react-day-picker"
 import format from "date-format"
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet"
 
 // This is the type of the search tags that are displayed below the search bar
 type SearchTag = Tag & { selected: boolean }
@@ -429,6 +430,13 @@ function Cards() {
     }
   }
 
+  // Callback function for when the "Quick View" button is clicked
+  // Called when we click on the "Quick View" button
+  // This function will open the quick view modal and display all the information about the business card
+  const showQuickView = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, code: string) => {
+    event.stopPropagation()
+  }
+
   return (
     <main>
       <Header />
@@ -499,7 +507,7 @@ function Cards() {
           {businessCards && businessCards.map((businessCard) => (
             <div
               key={businessCard.code}
-              className="bg-white rounded-md shadow cursor-pointer hover:shadow-lg transition duration-250 overflow-hidden"
+              className="bg-white rounded-md shadow cursor-pointer hover:shadow-lg transition duration-250 overflow-hidden relative"
               onClick={() => { router.push(`/cards/${businessCard.code}`) }}>
               <div className="w-100 bg-cover bg-center relative h-40" style={{backgroundImage: `url('${businessCard.front_image_url}')`}} ></div> {/* Front image */}
               <div className="px-4 py-3 border-bottom">
@@ -508,7 +516,99 @@ function Cards() {
                 </div>
                 <div className="text-xs text-muted-foreground">{businessCard.company}</div> {/* Company */}
                 <div className="text-xs text-muted-foreground">{businessCard.email}</div> {/* Email */}
-                <div className="text-xs text-muted-foreground">{businessCard.mobile_phone}</div> {/* Mobile Phone */}
+
+                <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => { showQuickView(e, businessCard.code) }}>
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <div className="absolute top-2 right-2">
+                        <div className="w-8 h-8 bg-white opacity-80 hover:opacity-100 rounded-full flex justify-center items-center cursor-pointer">
+                          <View className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </SheetTrigger>
+                    <SheetContent className="w-[400px]">
+                      <SheetHeader>
+                        <SheetTitle>{businessCard.last_name} {businessCard.first_name}</SheetTitle>
+                      </SheetHeader>
+                      <div className="grid gap-2 py-4">
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5 "><UserCircle className="w-4 h-4" />Last name</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.last_name}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><UserCircle className="w-4 h-4" />First name</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.first_name}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Ear className="w-6 h-6" />Last name (Phonetic)</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.last_name_phonetic}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Ear className="w-6 h-6" />First name (Phonetic)</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.first_name_phonetic}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Building2 className="w-4 h-4" />Company</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.company}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Pyramid className="w-4 h-4" />Department</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.department}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><GraduationCap className="w-4 h-4" />Job Title</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.job_title}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><AppWindow className="w-4 h-4" />Website</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.website}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Home className="w-4 h-4" />Address</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.address}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><AtSign className="w-4 h-4" />Email</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.email}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Phone className="w-4 h-4" />Home Phone</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.home_phone}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Smartphone className="w-4 h-4" />Mobile Phone</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.mobile_phone}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><Printer className="w-4 h-4" />Fax</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.fax}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><CalendarDays className="w-4 h-4" />Meeting Date</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.meeting_date}</div>
+                        </div>
+                        <div className="grid grid-cols-12 items-center gap-4">
+                          <div className="text-sm font-medium flex gap-2 col-span-5"><ScrollText className="w-4 h-4" />Notes</div>
+                          <div className="col-span-7 text-right text-sm">{businessCard.notes}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        { businessCard.tags.map((tag) => (
+                          <Badge
+                            key={tag.id}
+                            style={{ backgroundColor: tag.color, color: "white" }}
+                          > { tag.name }
+                          </Badge>
+                        ))}
+                      </div>
+                      <SheetFooter>
+                        <SheetClose asChild>
+                          <Button>Close</Button>
+                        </SheetClose>
+                      </SheetFooter>
+                    </SheetContent>
+                  </Sheet>
+                </div>
 
                 {/* Tags */}
                 { businessCard.tags.length > 0 &&

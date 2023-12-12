@@ -7,6 +7,7 @@ import {
   Menu,
   Palmtree,
   PlusCircle,
+  Star,
   Tag,
   Unplug,
 } from "lucide-react"
@@ -88,6 +89,16 @@ const Header = () => {
               >
                 <Tag className="w-4 h-4 mr-2" />
                 <span>Manage Tags</span>
+                {/* TODO: Add keyboard shortcut */}
+                {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => router.push("/subscriptions")}
+              >
+                <Star className="w-4 h-4 mr-2" />
+                <span>Subscriptions</span>
                 {/* TODO: Add keyboard shortcut */}
                 {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
               </DropdownMenuItem>

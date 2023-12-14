@@ -3,7 +3,6 @@
 // URL: /cards/new
 // This page allows the user to upload the front and back images of a business and analyze it.
 
-import Image from "next/image"
 import Header from "@/components/header"
 import { Button } from "@/components/ui/button"
 import React, { useState, useContext, useEffect } from "react"

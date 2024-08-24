@@ -143,11 +143,11 @@ function NewCard() {
 
         // Create a FormData object to send the images to the server
         const formData = new FormData()
-        formData.set("front_image", frontImage as Blob)
+        formData.set("business_card[front_image]", frontImage as Blob);
 
         // Only add the back image if the user uploaded it
         if (backImage) {
-          formData.set("back_image", backImage as Blob)
+          formData.set("business_card[back_image]", backImage as Blob);
         }
 
         formData.set("language_hints", JSON.stringify(businessCardLanguages.filter((l) => l.checked).map((l) => l.languageCode)))

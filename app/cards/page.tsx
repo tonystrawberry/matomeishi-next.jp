@@ -629,7 +629,7 @@ function Cards() {
           ))}
 
           {/* No business cards */}
-          {businessCards && businessCards.length === 0 &&
+          {businessCards && businessCards.length === 0 && !isLoadingBusinessCards &&
             <div className="col-span-full flex flex-col items-center justify-center">
               <div className="text-xl font-semibold mb-2">
                 No business cards found 🥲

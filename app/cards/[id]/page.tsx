@@ -216,22 +216,24 @@ function SingleCard() {
       const firebaseToken = await user.getIdToken()
 
       const body = JSON.stringify({
-        address: values.address,
-        company: values.company,
-        department: values.department,
-        email: values.email,
-        fax: values.fax,
-        first_name: values.first_name,
-        first_name_phonetic: values.first_name_phonetic,
-        home_phone: values.home_phone,
-        job_title: values.job_title,
-        last_name: values.last_name,
-        last_name_phonetic: values.last_name_phonetic,
-        meeting_date: values.meeting_date,
-        mobile_phone: values.mobile_phone,
-        notes: values.notes,
-        tags: values.tags,
-        website: values.website,
+        business_card: {
+          address: values.address,
+          company: values.company,
+          department: values.department,
+          email: values.email,
+          fax: values.fax,
+          first_name: values.first_name,
+          first_name_phonetic: values.first_name_phonetic,
+          home_phone: values.home_phone,
+          job_title: values.job_title,
+          last_name: values.last_name,
+          last_name_phonetic: values.last_name_phonetic,
+          meeting_date: values.meeting_date,
+          mobile_phone: values.mobile_phone,
+          notes: values.notes,
+          business_card_tags_attributes: values.tags.map ((tag) => ({ tag_attributes: { id: tag.tagId, name: tag.name } })),
+          website: values.website
+        }
       })
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/business_cards/${id}`,

@@ -54,6 +54,10 @@ const config: PlaywrightTestConfig = {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
+        bypassCSP: true, // add this to disable cors
+        launchOptions: {
+          args: ['--disable-web-security'], // add this to disable cors
+        }
       },
       dependencies: ['setup'],
     },

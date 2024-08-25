@@ -22,7 +22,7 @@ const Pagination = (props: { paginationInfo: PaginationInfo, onChangePage: Funct
       <Button>{paginationInfo.currentPage}</Button>
       { !paginationInfo.isLastPage && paginationInfo.currentPage < paginationInfo.totalPages - 1 && <Button variant="secondary" onClick={() => onChangePage(paginationInfo.currentPage + 1)}>{paginationInfo.currentPage + 1}</Button> }
       { paginationInfo.currentPage < paginationInfo.totalPages - 2 &&  "..." }
-      { paginationInfo.currentPage < paginationInfo.totalPages - 1 && <Button variant="secondary" onClick={() => onChangePage(paginationInfo.totalPages)}>{paginationInfo.totalPages}</Button> }
+      { paginationInfo.currentPage <= paginationInfo.totalPages - 1 && <Button variant="secondary" onClick={() => onChangePage(paginationInfo.totalPages)}>{paginationInfo.totalPages}</Button> }
     </div>
   )
 }

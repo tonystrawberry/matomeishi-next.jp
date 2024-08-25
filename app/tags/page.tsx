@@ -58,28 +58,11 @@ function Tags() {
   const [rowSelection, setRowSelection] = useState({}) // Corresponds to the row selection of the table
 
   const columns: ColumnDef<Tag>[] = [
-    // TODO: Add select for bulk actions later
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={table.getIsAllPageRowsSelected()}
-    //       onCheckedChange={(value: any) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "name",
+      meta: {
+        name: "Name"
+      },
       header: ({ column }) => {
         return (
           <Button
@@ -98,11 +81,17 @@ function Tags() {
     },
     {
       accessorKey: "description",
+      meta: {
+        name: "Description"
+      },
       header: "Description",
       cell: ({ row }) => <div>{row.getValue("description")}</div>,
     },
     {
       accessorKey: "business_cards_count",
+      meta: {
+        name: "Count"
+      },
       header: ({ column }) => {
         return (
           <Button
@@ -270,7 +259,7 @@ function Tags() {
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {(column.columnDef.header || "") as string}
+                        {((column.columnDef.meta as { name: string }).name as string || "") as string}
                       </DropdownMenuCheckboxItem>
                     )
                   })}
